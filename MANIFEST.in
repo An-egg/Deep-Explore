@@ -1,0 +1,13 @@
+include README.md
+include LICENSE
+include CHANGELOG.md
+include CONTRIBUTING.md
+include requirements.txt
+recursive-include deep_explore *.py
+recursive-include examples *.py *.yaml
+recursive-include docs *.md
+exclude tests/*
+global-exclude __pycache__/
+global-exclude *.py[cod]
+global-exclude .git*
+global-exclude .DS_Store

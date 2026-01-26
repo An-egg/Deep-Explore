@@ -2,7 +2,7 @@
 
 import logging
 from dataclasses import dataclass, field
-from typing import Any, TYPE_CHECKING, Optional
+from typing import Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ..utils.util import DeepExploreUtil
@@ -23,24 +23,8 @@ class DeepExploreActionExecutor:
     action_id: str
     action_name: str
     action_public_client: Any
-    action_exec_user: str = "admin_login"
     except_meet_exception: bool = False
     action_args: list = field(default_factory=list)
-
-    def __post_init__(self):
-        # Optional: Support session manager if available
-        try:
-            from hours.common.common import SessionManager
-            getattr(SessionManager, self.action_exec_user)()
-        except ImportError:
-            pass
-
-        # Use public manager if client is a string path
-        if isinstance(self.action_public_client, str):
-            from ..utils.public_manager import DeepExplorePublicManager
-            self.action_public_client = (
-                DeepExplorePublicManager.create_public_client(
-                    self.action_public_client))
 
     def exec_action(self, deep_explore_object):
         """Execute action."""
@@ -65,9 +49,4 @@ class DeepExploreActionExecutor:
             if not self.except_meet_exception:
                 raise Exception(f"Unexpected exception during action execution: {e}")
             logger.warning(f"Exception during action execution: {e}, but exception was expected for this action")
-        # If return is ERIS object, register it in test context
-        if hasattr(result, '__class__') and 'ERIS' in result.__class__.__name__:
-            logger.info(
-                "Register eris instance in DeepExploreObject by action_id")
-            deep_explore_object.add_eris_instance(self.action_id, result)
         return result

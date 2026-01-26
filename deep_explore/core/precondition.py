@@ -19,29 +19,41 @@ class DeepExplorePrecondition(ABC):
         """Verify if the target object satisfies the precondition.
 
         Args:
-            deep_explore_object: Target object to verify
+            deep_explore_object: Target object to verify.
 
         Returns:
-            bool: True if condition is satisfied, False otherwise
+            bool: True if condition is satisfied, False otherwise.
         """
         pass
 
 
 class DeepExploreStatusPrecondition(DeepExplorePrecondition):
-    """Status precondition, verifies if object status is in the allowed list."""
+    """Status precondition, verifies if object status is in the allowed list.
+
+    Attributes:
+        status_list: List of allowed statuses.
+        compare_result: Expected precondition result.
+    """
 
     def __init__(self, status_list, compare_result):
         """Initialize status precondition.
 
         Args:
-            status_list: List of allowed statuses
-            compare_result: Expected precondition result
+            status_list: List of allowed statuses.
+            compare_result: Expected precondition result.
         """
         self.status_list = status_list
         self.compare_result = compare_result
 
     def check_precondition(self, deep_explore_object):
-        """Check if object status is in the allowed list."""
+        """Check if object status is in the allowed list.
+
+        Args:
+            deep_explore_object: Target object to check.
+
+        Returns:
+            bool: True if status is in allowed list, False otherwise.
+        """
         from ..utils.util import DeepExploreUtil
 
         current_status = deep_explore_object.get_status()

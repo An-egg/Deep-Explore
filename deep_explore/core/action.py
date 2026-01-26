@@ -2,21 +2,23 @@
 
 import logging
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, List
+from typing import Any, List
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass
 class DeepExploreAction:
-    """Test exploration action executor, encapsulating pre-check, execution, and post-validation logic.
+    """Test exploration action executor.
 
-    Args:
-        action_executor: Action configuration information
-        preconditions: List of preconditions for action execution
-        pre_checks: List of checks that must pass before action execution
-        post_checks: List of validations that must pass after action execution
-        update_positions: List of positions to execute object update actions
+    Encapsulates pre-check, execution, and post-validation logic.
+
+    Attributes:
+        action_executor: Action configuration information.
+        preconditions: List of preconditions for action execution.
+        pre_checks: List of checks that must pass before action execution.
+        post_checks: List of validations that must pass after action execution.
+        update_positions: List of positions to execute object update actions.
     """
     action_executor: Any
     preconditions: list
@@ -25,18 +27,23 @@ class DeepExploreAction:
     update_positions: List[str] = field(default_factory=lambda: ["end"])
 
     def exec_action(self, deep_explore_object):
-        """Execute the complete lifecycle of an action:
-        1. Execute all pre-checks (pre_checks)
-        2. Call target action method
-        3. Register ERIS return object
-        4. Execute all post-validations (post_checks)
-        5. Update test exploration object state
+        """Execute the complete lifecycle of an action.
+
+        Steps:
+        1. Execute all pre-checks (pre_checks).
+        2. Call target action method.
+        3. Register ERIS return object.
+        4. Execute all post-validations (post_checks).
+        5. Update test exploration object state.
+
+        Args:
+            deep_explore_object: Test exploration object to execute action on.
 
         Returns:
-            object: Return result of the action method
+            Any: Return result of the action method.
 
         Raises:
-            RuntimeError: Raised when pre-check or post-check fails
+            Exception: Raised when pre-check or post-check fails.
         """
         deep_explore_object.set_update_times(999)
         if "start" in self.update_positions:
@@ -69,8 +76,11 @@ class DeepExploreAction:
     def check_preconditions(self, deep_explore_object):
         """Verify all preconditions are satisfied.
 
+        Args:
+            deep_explore_object: Test exploration object to check preconditions on.
+
         Returns:
-            bool: True if all conditions are satisfied, False if any condition fails
+            bool: True if all conditions are satisfied, False if any condition fails.
         """
         for precondition in self.preconditions:
             if not precondition.check_precondition(deep_explore_object):

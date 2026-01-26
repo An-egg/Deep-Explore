@@ -8,12 +8,11 @@ class DeepExplorePublicManager:
 
     @staticmethod
     def create_public_client(
-            public_client_name, public_client_prefix):
+            public_client_absolute_path, *args, **wkargs):
         """Dynamically create corresponding client object based on given public client name.
 
         Args:
-            public_client_name: Client name (e.g. "module.ClassName")
-            public_client_prefix: Client prefix (default "hours.common.public")
+            public_client_absolute_path: Client prefix (default "hours.common.public.module.ClassName")
 
         Returns:
             object: Created public client instance
@@ -22,20 +21,19 @@ class DeepExplorePublicManager:
             ImportError: Module import failed
             AttributeError: Class name not found in module
         """
+        full_module_path = ""
+        class_name = ""
         try:
-            module_name, class_name = public_client_name.rsplit('.', 1)
-
-            # Build complete module path
-            full_module_path = f"{public_client_prefix}{module_name}"
+            module_name, class_name = public_client_absolute_path.rsplit('.', 1)
 
             # Dynamically import module
-            module = importlib.import_module(full_module_path)
+            module = importlib.import_module(module_name)
 
             # Get client class
             client_class = getattr(module, class_name)
 
             # Create instance and return
-            return client_class()
+            return client_class(*args, **wkargs)
 
         except ImportError as e:
             raise ImportError(

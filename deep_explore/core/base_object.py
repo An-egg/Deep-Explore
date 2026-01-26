@@ -8,11 +8,13 @@ logger = logging.getLogger(__name__)
 
 
 class DeepExploreObject(ABC):
-    """Base class for test exploration objects, providing state management and ERIS instance management functionality."""
+    """Base class for test exploration objects.
+
+    Provides state management and ERIS instance management functionality.
+    """
 
     def __init__(self):
-        self.eris_instance_dict: Dict[str, Any] = {}
-        self.last_eris_instance: Optional[Any] = None
+        """Initialize DeepExploreObject."""
         self.data: Optional[Any] = None
         self.update_times: int = 3
 
@@ -24,13 +26,13 @@ class DeepExploreObject(ABC):
         2. With parameters: {resolver}_args_{arg1}_{arg2}...()
 
         Args:
-            resolver: Resolver identifier
+            resolver: Resolver identifier.
 
         Returns:
-            object: Resolved value
+            Any: Resolved value.
 
         Raises:
-            AttributeError: Resolver method does not exist
+            AttributeError: Resolver method does not exist.
         """
         try:
             if "_args_" in resolver:
@@ -49,69 +51,28 @@ class DeepExploreObject(ABC):
 
     @abstractmethod
     def _do_update_state(self):
-        """Abstract method to perform actual state update (implemented by subclasses)."""
+        """Perform actual state update.
+
+        Abstract method to be implemented by subclasses.
+        """
         pass
 
     @abstractmethod
     def get_status(self) -> Any:
-        """Abstract method to get current status.
+        """Get current status.
+
+        Abstract method to be implemented by subclasses.
 
         Returns:
-            object: Current status value
+            Any: Current status value.
         """
         pass
 
-    def add_eris_instance(self, action_id: str, eris_instance: Any):
-        """Add ERIS instance to object list.
-
-        Args:
-            action_id: Unique ID of the action
-            eris_instance: ERIS instance to add
-        """
-        action_id = str(action_id)
-        self.eris_instance_dict[action_id] = eris_instance
-        self.last_eris_instance = eris_instance
-
-    def get_last_eris_instance(self) -> Optional[Any]:
-        """Get the last operated ERIS instance.
-
-        Returns:
-            object: Last operated ERIS instance
-        """
-        return self.last_eris_instance
-
-    def get_eris_instance_list(self):
-        """Get list of all ERIS instances.
-
-        Returns:
-            list: List of ERIS instances
-        """
-        return self.eris_instance_dict.values()
-
-    def get_eris_instance_by_action_id(self, action_id: str) -> Any:
-        """Get ERIS instance by action ID.
-
-        Args:
-            action_id: Unique action ID
-
-        Returns:
-            object: Corresponding ERIS instance
-
-        Raises:
-            KeyError: Action ID not found
-        """
-        try:
-            eris_instance = self.eris_instance_dict[action_id]
-            return eris_instance
-        except KeyError:
-            logger.error(f"Action_id {action_id} not found")
-            raise
-
     def get_data(self) -> Optional[Any]:
-        """Get current data (with automatic cache update).
+        """Get current data with automatic cache update.
 
         Returns:
-            object: Current data
+            Optional[Any]: Current data.
         """
         try:
             if self.update_times > 0:
@@ -123,10 +84,10 @@ class DeepExploreObject(ABC):
         return self.data
 
     def update_state(self):
-        """Update object state (with retry mechanism).
+        """Update object state with retry mechanism.
 
         Raises:
-            RuntimeError: Update failed after maximum retry attempts
+            Exception: Update failed after maximum retry attempts.
         """
         max_retries = 3
 
@@ -149,7 +110,7 @@ class DeepExploreObject(ABC):
         """Set object state update count.
 
         Args:
-            update_times: Number of updates
+            update_times: Number of updates.
         """
         self.update_times = update_times
 

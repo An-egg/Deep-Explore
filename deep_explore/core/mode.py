@@ -7,26 +7,31 @@ logger = logging.getLogger(__name__)
 
 
 class DeepExploreMode:
-    """Base class for test exploration modes, providing scenario/action execution statistics.
+    """Base class for test exploration modes.
+
+    Provides scenario/action execution statistics.
 
     Attributes:
-        already_exec_scenarios: List of executed scenario records
-        already_exec_actions: List of executed action records
+        already_exec_scenarios: List of executed scenario records.
+        already_exec_actions: List of executed action records.
     """
     already_exec_scenarios = []
     already_exec_actions = []
 
     def exec_test(self):
-        """Main entry method for test execution (to be implemented by subclasses)."""
+        """Main entry method for test execution.
+
+        To be implemented by subclasses.
+        """
         pass
 
     def scenario_statistics(self):
         """Record and output scenario execution statistics.
 
         Steps:
-        1. Record all executed scenarios
-        2. Count execution frequency for each scenario
-        3. Clear execution records
+        1. Record all executed scenarios.
+        2. Count execution frequency for each scenario.
+        3. Clear execution records.
         """
         logger.info("Already exec scenario total count: "
                     f"{len(self.already_exec_scenarios)}")
@@ -47,9 +52,9 @@ class DeepExploreMode:
         """Record and output action execution statistics.
 
         Steps:
-        1. Record all executed actions
-        2. Count execution frequency for each action
-        3. Clear execution records
+        1. Record all executed actions.
+        2. Count execution frequency for each action.
+        3. Clear execution records.
         """
         logger.info("Already exec action total count: "
                     f"{len(self.already_exec_actions)}")
@@ -69,13 +74,21 @@ class DeepExploreMode:
 class DeepExploreRandomScenarioMode(DeepExploreMode):
     """Random scenario test mode.
 
-    Args:
-        deep_explore_object: Test exploration target object
-        stop_criteria_list: List of stopping criteria
-        scenarios: List of executable scenarios
+    Attributes:
+        deep_explore_object: Test exploration target object.
+        stop_criteria_list: List of stopping criteria.
+        scenarios: List of executable scenarios.
+        already_exec_scenarios: List of executed scenario records.
     """
 
     def __init__(self, deep_explore_object, stop_criteria_list, scenarios):
+        """Initialize random scenario mode.
+
+        Args:
+            deep_explore_object: Test exploration target object.
+            stop_criteria_list: List of stopping criteria.
+            scenarios: List of executable scenarios.
+        """
         self.deep_explore_object = deep_explore_object
         self.stop_criteria_list = stop_criteria_list
         self.scenarios = scenarios
@@ -124,13 +137,21 @@ class DeepExploreRandomScenarioMode(DeepExploreMode):
 class DeepExploreRandomActionMode(DeepExploreMode):
     """Random action test mode.
 
-    Args:
-        deep_explore_object: Test exploration target object
-        stop_criteria_list: List of stopping criteria
-        actions: List of executable actions
+    Attributes:
+        deep_explore_object: Test exploration target object.
+        stop_criteria_list: List of stopping criteria.
+        actions: List of executable actions.
+        already_exec_actions: List of executed action records.
     """
 
     def __init__(self, deep_explore_object, stop_criteria_list, actions):
+        """Initialize random action mode.
+
+        Args:
+            deep_explore_object: Test exploration target object.
+            stop_criteria_list: List of stopping criteria.
+            actions: List of executable actions.
+        """
         self.deep_explore_object = deep_explore_object
         self.stop_criteria_list = stop_criteria_list
         self.actions = actions
@@ -175,15 +196,23 @@ class DeepExploreRandomActionMode(DeepExploreMode):
 class DeepExploreSequenceScenarioMode(DeepExploreMode):
     """Sequential scenario test mode.
 
-    Args:
-        deep_explore_object: Test exploration target object
-        stop_criteria_list: List of stopping criteria
-        scenarios: List of executable scenarios
-        reverse: Whether to execute sequence in reverse (default False)
+    Attributes:
+        deep_explore_object: Test exploration target object.
+        stop_criteria_list: List of stopping criteria.
+        scenarios: List of executable scenarios.
+        already_exec_scenarios: List of executed scenario records.
     """
 
     def __init__(self, deep_explore_object, stop_criteria_list, scenarios,
                  reverse=False):
+        """Initialize sequential scenario mode.
+
+        Args:
+            deep_explore_object: Test exploration target object.
+            stop_criteria_list: List of stopping criteria.
+            scenarios: List of executable scenarios.
+            reverse: Whether to execute sequence in reverse (default False).
+        """
         self.deep_explore_object = deep_explore_object
         self.stop_criteria_list = stop_criteria_list
         self.scenarios = scenarios[::-1] if reverse else scenarios
@@ -229,15 +258,23 @@ class DeepExploreSequenceScenarioMode(DeepExploreMode):
 class DeepExploreSequenceActionMode(DeepExploreMode):
     """Sequential action test mode.
 
-    Args:
-        deep_explore_object: Test exploration target object
-        stop_criteria_list: List of stopping criteria
-        actions: List of executable actions
-        reverse: Whether to execute actions in reverse order
+    Attributes:
+        deep_explore_object: Test exploration target object.
+        stop_criteria_list: List of stopping criteria.
+        actions: List of executable actions.
+        already_exec_actions: List of executed action records.
     """
 
     def __init__(self, deep_explore_object, stop_criteria_list, actions,
                  reverse=False):
+        """Initialize sequential action mode.
+
+        Args:
+            deep_explore_object: Test exploration target object.
+            stop_criteria_list: List of stopping criteria.
+            actions: List of executable actions.
+            reverse: Whether to execute actions in reverse order (default False).
+        """
         self.deep_explore_object = deep_explore_object
         self.stop_criteria_list = stop_criteria_list
         self.actions = actions[::-1] if reverse else actions
@@ -286,17 +323,17 @@ class DeepExploreModeFactory:
 
         Args:
             mode_type: Mode type ('random_scenario', 'sequence_scenario',
-                               'random_action')
-            deep_explore_object: Test exploration target object
-            stop_criteria_list: List of stopping criteria
-            test_objects: Test object collection (scenarios or actions)
-            **kwargs: Mode-specific parameters (e.g., reverse)
+                               'random_action', 'sequence_action').
+            deep_explore_object: Test exploration target object.
+            stop_criteria_list: List of stopping criteria.
+            test_objects: Test object collection (scenarios or actions).
+            **kwargs: Mode-specific parameters (e.g., reverse).
 
         Returns:
-            DeepExploreMode: Created test mode instance
+            DeepExploreMode: Created test mode instance.
 
         Raises:
-            ValueError: When an unsupported mode type is provided
+            ValueError: When an unsupported mode type is provided.
         """
         if mode_type == "random_scenario":
             return DeepExploreRandomScenarioMode(

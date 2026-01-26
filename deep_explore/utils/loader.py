@@ -5,6 +5,7 @@ import random
 import string
 import time
 
+from .. import DeepExplorePublicManager
 from ..core.action import DeepExploreAction
 from ..core.action_check import DeepExploreActionCheck
 from ..core.action_executor import DeepExploreActionExecutor
@@ -74,8 +75,8 @@ class DeepExploreLoader:
         executor = DeepExploreActionExecutor(
             action_id=action_id,
             action_name=action_conf["action_name"],
-            action_public_client=action_conf["action_public_client"],
-            action_exec_user=action_conf.get("action_exec_user", "admin_login"),
+            action_public_client=DeepExplorePublicManager.create_public_client(
+                action_conf["action_public_client"]),
             except_meet_exception=action_conf.get(
                 "except_meet_exception", False),
             action_args=action_conf["action_args"]

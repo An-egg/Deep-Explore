@@ -12,36 +12,36 @@ logger = logging.getLogger(__name__)
 
 
 class DeepExplorePrecondition(ABC):
-    """测试探索行为预检条件的抽象基类"""
+    """Abstract base class for test exploration behavior preconditions."""
 
     @abstractmethod
     def check_precondition(self, deep_explore_object) -> bool:
-        """
-        验证目标对象是否满足预检条件
+        """Verify if the target object satisfies the precondition.
 
         Args:
-            deep_explore_object: 要验证的目标对象
+            deep_explore_object: Target object to verify
 
         Returns:
-            bool: 满足条件返回True，否则False
+            bool: True if condition is satisfied, False otherwise
         """
         pass
 
 
 class DeepExploreStatusPrecondition(DeepExplorePrecondition):
-    """状态预检条件，验证对象状态是否在允许列表中"""
+    """Status precondition, verifies if object status is in the allowed list."""
 
     def __init__(self, status_list, compare_result):
-        """
+        """Initialize status precondition.
+
         Args:
-            status_list: 允许的状态列表
-            compare_result: 预期的前置条件结果
+            status_list: List of allowed statuses
+            compare_result: Expected precondition result
         """
         self.status_list = status_list
         self.compare_result = compare_result
 
     def check_precondition(self, deep_explore_object):
-        """检查对象状态是否在允许列表中"""
+        """Check if object status is in the allowed list."""
         from ..utils.util import DeepExploreUtil
 
         current_status = deep_explore_object.get_status()
@@ -51,28 +51,29 @@ class DeepExploreStatusPrecondition(DeepExplorePrecondition):
 
 
 class DeepExploreMatchDataPrecondition(DeepExplorePrecondition):
-    """数据结构匹配预检条件，验证对象数据是否包含指定结构"""
+    """Data structure matching precondition, verifies if object data contains specified structure."""
 
     def __init__(self, data, compare_result):
-        """
+        """Initialize data matching precondition.
+
         Args:
-            data: 需要匹配的数据模板（字典结构）
-            compare_result: 预期的前置条件结果
+            data: Data template to match (dictionary structure)
+            compare_result: Expected precondition result
         """
         self.data = data
         self.compare_result = compare_result
 
     def check_precondition(self, deep_explore_object):
-        """递归检查数据是否包含指定结构"""
+        """Recursively check if data contains specified structure."""
         from ..utils.util import DeepExploreUtil
 
         def is_subset_recursive(sub, super_obj):
-            """递归检查子集关系"""
-            # 基本类型直接比较
+            """Recursively check subset relationship."""
+            # Basic types direct comparison
             if not isinstance(sub, (dict, list)):
                 return sub == super_obj
 
-            # 字典类型检查
+            # Dictionary type check
             if isinstance(sub, dict):
                 if sub == {} and len(super_obj) > 0:
                     return False
@@ -85,7 +86,7 @@ class DeepExploreMatchDataPrecondition(DeepExplorePrecondition):
                         return False
                 return True
 
-            # 列表类型检查（要求顺序一致）
+            # List type check (requires consistent order)
             if isinstance(sub, list):
                 if sub == [] and len(super_obj) > 0:
                     return False
@@ -108,14 +109,15 @@ class DeepExploreMatchDataPrecondition(DeepExplorePrecondition):
 
 
 class DeepExploreFunctionPrecondition(DeepExplorePrecondition):
-    """函数结果匹配预检条件，验证结果是否符合预期"""
+    """Function result matching precondition, verifies if result matches expectation."""
 
     def __init__(
             self, deep_explore_check: DeepExploreActionCheck, compare_result):
-        """
+        """Initialize function precondition.
+
         Args:
-            deep_explore_check: check方法对象
-            compare_result: 预期的前置条件结果
+            deep_explore_check: Check method object
+            compare_result: Expected precondition result
         """
         self.deep_explore_check = deep_explore_check
         self.compare_result = compare_result
@@ -125,22 +127,21 @@ class DeepExploreFunctionPrecondition(DeepExplorePrecondition):
 
 
 class DeepExplorePreconditionFactory:
-    """预检条件工厂类，提供标准化的对象创建方式"""
+    """Precondition factory class, provides standardized object creation."""
 
     @staticmethod
     def create(precondition_type, precondition_data, compare_result=True):
-        """
-        创建预检条件实例的工厂方法
+        """Factory method to create precondition instance.
 
         Args:
-            precondition_type: 预检类型 (支持 'status', 'data')
-            precondition_data: 对应类型需要的参数
-            compare_result: 比较预期结果
+            precondition_type: Precondition type (supports 'status', 'data')
+            precondition_data: Parameters required for the type
+            compare_result: Compare expected result
         Returns:
-            DeepExplorePrecondition: 预检条件实例
+            DeepExplorePrecondition: Precondition instance
 
         Raises:
-            ValueError: 不支持的类型
+            ValueError: Unsupported type
         """
         logger.info(f"Creating precondition of type: {precondition_type}")
 

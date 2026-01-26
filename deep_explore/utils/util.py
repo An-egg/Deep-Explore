@@ -7,10 +7,9 @@ from typing import Callable, Any
 
 
 class DeepExploreUtil:
-    """
-    测试探索参数解析工具类
+    """Test exploration parameter resolution utility class.
 
-    提供占位符参数的动态解析功能
+    Provides dynamic resolution functionality for placeholder parameters.
     """
 
     @staticmethod
@@ -19,21 +18,20 @@ class DeepExploreUtil:
             args,
             placeholder_prefix="_resolver_"
     ):
-        """
-        递归解析参数列表中的占位符，支持多层嵌套的字典/列表/元组结构
+        """Recursively resolve placeholders in parameter list, supports multi-level nested dict/list/tuple structures.
 
         Args:
-            deep_explore_object: 提供解析方法的测试对象
-            args: 待解析的参数(支持嵌套结构)
-            placeholder_prefix: 占位符前缀
+            deep_explore_object: Test object providing resolution methods
+            args: Parameters to resolve (supports nested structures)
+            placeholder_prefix: Placeholder prefix
 
         Returns:
-            解析后的数据结构（保持原始嵌套结构）
+            Resolved data structure (maintains original nesting structure)
         """
 
         def resolve_recursive(item):
-            """递归解析单个元素"""
-            # 1. 处理字符串类型的占位符
+            """Recursively resolve single element."""
+            # 1. Handle string type placeholders
             if isinstance(item, str):
                 if item.startswith(placeholder_prefix):
                     method_name = item[len(placeholder_prefix):]
@@ -52,39 +50,38 @@ class DeepExploreUtil:
                         item = (tmp[0], ast.literal_eval(tmp[1]))
                     return item
 
-            # 2. 处理字典类型：递归解析每个value
+            # 2. Handle dictionary type: recursively resolve each value
             if isinstance(item, dict):
                 return {k: resolve_recursive(v) for k, v in item.items()}
 
-            # 3. 处理列表/元组类型：递归解析每个元素
+            # 3. Handle list/tuple type: recursively resolve each element
             if isinstance(item, (list, tuple)):
                 sequence_type = type(item)
                 return sequence_type(resolve_recursive(elem) for elem in item)
 
-            # 4. 基础类型直接返回
+            # 4. Basic types return directly
             return item
 
-        # 主解析流程
+        # Main resolution process
         resolved_args = resolve_recursive(args)
         return resolved_args
 
     @staticmethod
     def dynamic_import(path) -> Callable:
-        """
-        动态导入指定类路径的类对象或方法
+        """Dynamically import class object or method from specified class path.
 
         Args:
-            path: 类的完整路径字符串 (格式: "module.submodule.ClassName")
+            path: Full path string of the class (format: "module.submodule.ClassName")
 
         Returns:
-            object: 导入的类对象或方法路径
+            object: Imported class object or method path
 
         Raises:
-            ImportError: 当模块或类不存在时
-            AttributeError: 当模块中不存在指定类时
+            ImportError: When module or class does not exist
+            AttributeError: When specified class does not exist in module
         """
         try:
-            # 分割模块路径和类名
+            # Split module path and class name
             pre_path, end_path = path.rsplit(".", 1)
             try:
                 mod = importlib.import_module(pre_path)
@@ -101,7 +98,7 @@ class DeepExploreUtil:
     def validate(config, resolver_class):
         errors = []
 
-        # 1. 预先获取所有合法的 resolver 方法名
+        # 1. Pre-get all valid resolver method names
         valid_resolvers = set()
         for name, _ in inspect.getmembers(
                 resolver_class, predicate=inspect.isroutine):
@@ -110,13 +107,13 @@ class DeepExploreUtil:
             else:
                 valid_resolvers.add(f"_resolver_{name}")
 
-        # 2. 基本结构校验
+        # 2. Basic structure validation
         if not isinstance(config, dict):
-            return ["YAML 内容必须是 Mapping 结构"]
+            return ["YAML content must be Mapping structure"]
 
         mode = config.get("mode_type", "")
 
-        # 3. 分发校验
+        # 3. Dispatch validation
         if "scenario" in mode:
             scenarios = config.get("scenario_list", [])
             for i, scenario in enumerate(scenarios):
@@ -130,14 +127,14 @@ class DeepExploreUtil:
                 config.get("action_list", []), "action_list", valid_resolvers,
                 errors)
         else:
-            errors.append(f"未知的 mode_type: {mode}")
+            errors.append(f"Unknown mode_type: {mode}")
 
         return errors
 
     @staticmethod
     def _check_action_list(action_list, path, valid_resolvers, errors):
         if not isinstance(action_list, list):
-            errors.append(f"[{path}] action_list 必须是列表")
+            errors.append(f"[{path}] action_list must be a list")
             return
         for i, action in enumerate(action_list):
             act_path = (f"{path}.action[{i}]"
@@ -154,25 +151,25 @@ class DeepExploreUtil:
         method_name = action.get("action_name")
         args = action.get("action_args", [])
 
-        # 1. 校验 Client 导入
+        # 1. Validate Client import
         client_cls = None
         try:
-            # 兼容模块.类 的结构
+            # Compatible with module.class structure
             client_cls = DeepExploreUtil.dynamic_import(client_path)
         except Exception as e:
-            errors.append(f"[{path}] Client加载失败: {str(e)}")
+            errors.append(f"[{path}] Client loading failed: {str(e)}")
 
-        # 2. 校验方法
+        # 2. Validate method
         if client_cls and method_name:
             if not hasattr(client_cls, method_name):
-                errors.append(f"[{path}] 类中找不到方法: {method_name}")
+                errors.append(f"[{path}] Method not found in class: {method_name}")
             else:
                 DeepExploreUtil._check_resolvers_in_args(
                     args, path, valid_resolvers, errors)
                 DeepExploreUtil._check_arg_count(
                     getattr(client_cls, method_name), args, path, errors)
 
-        # 3. 校验 Hook
+        # 3. Validate Hook
         for hook_key in ["action_pre_check_list", "action_post_check_list"]:
             for j, hook in enumerate(action.get(hook_key, []) or []):
                 info = hook.get("check_info", [])
@@ -181,12 +178,11 @@ class DeepExploreUtil:
                         DeepExploreUtil.dynamic_import(info[0])
                     except Exception as e:
                         errors.append(
-                            f"[{path}.{hook_key}[{j}]] 路径不可达: {info[0]},{e}")
+                            f"[{path}.{hook_key}[{j}]] Path unreachable: {info[0]},{e}")
 
     @staticmethod
     def _check_resolvers_in_args(args, path, valid_resolvers, errors):
-        """
-        支持多种 Resolver 格式：
+        """Supports multiple Resolver formats:
         1. _resolver_get_id
         2. _resolver_get_volume_ids_args_1
         3. _resolver_vm_id=get_id
@@ -200,43 +196,41 @@ class DeepExploreUtil:
                 DeepExploreUtil._check_resolvers_in_args(
                     v, path, valid_resolvers, errors)
         elif isinstance(args, str) and "_resolver_" in args:
-            # 提取真正的 resolver 方法名
+            # Extract actual resolver method name
             actual_name = DeepExploreUtil._extract_resolver_name(args)
             if actual_name not in valid_resolvers:
                 errors.append(
-                    f"[{path}] 使用了未定义的解析器: {args} (解析为: {actual_name})")
+                    f"[{path}] Used undefined resolver: {args} (resolved as: {actual_name})")
 
     @staticmethod
     def _extract_resolver_name(s: str) -> str:
-        """
-        从复杂的 YAML 字符串中提取对应的 Python Resolver 方法名
-        """
-        # 情况 A: _resolver_vm_id=get_id -> 取 get_id 并补全前缀
+        """Extract corresponding Python Resolver method name from complex YAML string."""
+        # Case A: _resolver_vm_id=get_id -> take get_id and complete prefix
         if "=" in s:
-            # 假设格式是 key=_resolver_method 或 _resolver_key=method
+            # Assume format is key=_resolver_method or _resolver_key=method
             parts = s.split("=")
-            # 找到包含 _resolver_ 的那部分，或者如果都不带，通常右边是方法
+            # Find the part containing _resolver_, or if neither has it, usually the right side is the method
             target = parts[1] if "_resolver_" not in parts[1] else parts[1]
             if not target.startswith("_resolver_"):
                 target = "_resolver_" + target
             return target
 
-        # 情况 B: _resolver_get_volume_ids_args_1 -> 截断 _args_ 之后的部分
+        # Case B: _resolver_get_volume_ids_args_1 -> truncate after _args_
         if "_args_" in s:
             return s.split("_args_")[0]
 
-        # 情况 C: 普通格式
+        # Case C: Normal format
         return s
 
     @staticmethod
     def _check_arg_count(method, provided_args, path, errors):
         try:
             sig = inspect.signature(method)
-            # 过滤掉 self / cls
+            # Filter out self / cls
             params = [p for p in sig.parameters.values() if
                       p.name not in ('self', 'cls')]
 
-            # 计算最小必需参数（无默认值，且不是 *args/**kwargs）
+            # Calculate minimum required parameters (no default value, and not *args/**kwargs)
             min_required = sum(
                 1 for p in params
                 if p.default == inspect.Parameter.empty
@@ -244,15 +238,15 @@ class DeepExploreUtil:
                                    inspect.Parameter.VAR_KEYWORD)
             )
 
-            # 检查是否存在 *args
+            # Check if *args exists
             has_varargs = any(
                 p.kind == inspect.Parameter.VAR_POSITIONAL for p in params)
 
-            # 最大参数数：如果没有 *args，则为普通参数数量；否则不限制
+            # Maximum parameter count: if no *args, it's normal parameter count; otherwise unlimited
             if has_varargs:
-                max_allowed = float('inf')  # 表示无限
+                max_allowed = float('inf')  # Represents unlimited
             else:
-                # 只计算位置参数和关键字参数（不含 *args/**kwargs）
+                # Only count positional and keyword parameters (excluding *args/**kwargs)
                 max_allowed = sum(
                     1 for p in params
                     if p.kind in (
@@ -267,13 +261,13 @@ class DeepExploreUtil:
 
             if arg_count < min_required:
                 errors.append(
-                    f"[{path}] 参数不足: 需要至少 {min_required}, 实际 {arg_count}"
+                    f"[{path}] Insufficient parameters: need at least {min_required}, actual {arg_count}"
                 )
             elif not has_varargs and arg_count > max_allowed:
                 errors.append(
-                    f"[{path}] 参数过多: 最多接受 {max_allowed}, 实际 {arg_count}"
+                    f"[{path}] Too many parameters: accept at most {max_allowed}, actual {arg_count}"
                 )
 
         except Exception:
-            # 可选：记录日志，但不要静默 pass（至少 debug log）
+            # Optional: log, but don't silently pass (at least debug log)
             pass

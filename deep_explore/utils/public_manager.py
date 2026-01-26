@@ -4,40 +4,37 @@ import importlib
 
 
 class DeepExplorePublicManager:
-    """公共客户端管理类，负责动态创建公共客户端实例"""
+    """Public client manager class, responsible for dynamically creating public client instances."""
 
     @staticmethod
     def create_public_client(
-            public_client_name, public_client_prefix="hours.common.public."):
-        """
-        根据给定的public客户端名称动态创建对应的客户端对象
+            public_client_name, public_client_prefix):
+        """Dynamically create corresponding client object based on given public client name.
 
         Args:
-            public_client_name: 客户端名称 (e.g. "module.ClassName")
-            public_client_prefix: 客户端前缀 (默认"hours.common.public")
+            public_client_name: Client name (e.g. "module.ClassName")
+            public_client_prefix: Client prefix (default "hours.common.public")
 
         Returns:
-            object: 创建的公共客户端实例
+            object: Created public client instance
 
         Raises:
-            ImportError: 模块导入失败
-            AttributeError: 类名在模块中不存在
+            ImportError: Module import failed
+            AttributeError: Class name not found in module
         """
         try:
             module_name, class_name = public_client_name.rsplit('.', 1)
 
-            # 构建完整模块路径
-            if public_client_name.startswith("hours"):
-                public_client_prefix = ""
+            # Build complete module path
             full_module_path = f"{public_client_prefix}{module_name}"
 
-            # 动态导入模块
+            # Dynamically import module
             module = importlib.import_module(full_module_path)
 
-            # 获取客户端类
+            # Get client class
             client_class = getattr(module, class_name)
 
-            # 创建实例并返回
+            # Create instance and return
             return client_class()
 
         except ImportError as e:

@@ -187,4 +187,4 @@ mode.exec_test()
 
 - **GitHub**: [https://github.com/leojohn/deep-explore](https://github.com/leojohn/deep-explore)
 - **Issues**: [https://github.com/leojohn/deep-explore/issues](https://github.com/leojohn/deep-explore/issues)
-- **Email**: leo@john.dev
+- **Email**: liaozynb@gmail.com

@@ -17,9 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 class DeepExploreLoader:
-    """
-    测试探索加载器
-    """
+    """Test exploration loader."""
     MODE_LOADERS = {
         "scenario": "_load_scenario_mode",
         "action": "_load_action_mode"

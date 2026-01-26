@@ -33,7 +33,7 @@ pip install deep-explore[yaml,dev]
 
 ### 1. Define Your Test Object
 
-```python
+```
 from deep_explore import DeepExploreObject
 
 class MyTestObject(DeepExploreObject):
@@ -87,7 +87,7 @@ scenario_list:
 
 ### 3. Load and Execute
 
-```python
+```
 import yaml
 from deep_explore import DeepExploreLoader
 
@@ -187,4 +187,4 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 - **GitHub**: [https://github.com/leojohn/deep-explore](https://github.com/leojohn/deep-explore)
 - **Issues**: [https://github.com/leojohn/deep-explore/issues](https://github.com/leojohn/deep-explore/issues)
-- **Email**: leo@john.dev
+- **Email**: liaozynb@gmail.com

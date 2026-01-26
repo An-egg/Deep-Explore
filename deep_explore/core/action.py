@@ -9,15 +9,14 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class DeepExploreAction:
-    """
-    测试探索动作执行器，封装动作执行的前置检查、执行和后置验证逻辑
+    """Test exploration action executor, encapsulating pre-check, execution, and post-validation logic.
 
     Args:
-        action_executor: 动作的配置信息
-        preconditions: 动作执行的前提条件列表
-        pre_checks: 动作执行前必须通过的检查项列表
-        post_checks: 动作执行后必须通过的验证项列表
-        update_positions: 执行object更新动作的位置列表
+        action_executor: Action configuration information
+        preconditions: List of preconditions for action execution
+        pre_checks: List of checks that must pass before action execution
+        post_checks: List of validations that must pass after action execution
+        update_positions: List of positions to execute object update actions
     """
     action_executor: Any
     preconditions: list
@@ -26,24 +25,23 @@ class DeepExploreAction:
     update_positions: List[str] = field(default_factory=lambda: ["end"])
 
     def exec_action(self, deep_explore_object):
-        """
-                执行动作的完整生命周期管理:
-                1. 执行所有前置检查(pre_checks)
-                2. 调用目标动作方法
-                3. 注册ERIS返回对象
-                4. 执行所有后置验证(post_checks)
-                5. 更新测试探索对象状态
+        """Execute the complete lifecycle of an action:
+        1. Execute all pre-checks (pre_checks)
+        2. Call target action method
+        3. Register ERIS return object
+        4. Execute all post-validations (post_checks)
+        5. Update test exploration object state
 
-                Returns:
-                    object: 动作方法的返回结果
+        Returns:
+            object: Return result of the action method
 
-                Raises:
-                    RuntimeError: 前置检查或后置检查失败时抛出
+        Raises:
+            RuntimeError: Raised when pre-check or post-check fails
         """
         deep_explore_object.set_update_times(999)
         if "start" in self.update_positions:
             deep_explore_object.update_state()
-        # 执行 pre_checks
+        # Execute pre_checks
         pre_checks = self.pre_checks
         for pre_check in pre_checks:
             if not pre_check.check():
@@ -52,11 +50,11 @@ class DeepExploreAction:
                     f"failed for action: {self.action_executor}")
         if "before_exec_action" in self.update_positions:
             deep_explore_object.update_state()
-        # 执行动作
+        # Execute action
         result = self.action_executor.exec_action(deep_explore_object)
         if "after_exec_action" in self.update_positions:
             deep_explore_object.update_state()
-        # 执行 post_checks
+        # Execute post_checks
         post_checks = self.post_checks
         for post_check in post_checks:
             if not post_check.check():
@@ -69,11 +67,10 @@ class DeepExploreAction:
         return result
 
     def check_preconditions(self, deep_explore_object):
-        """
-                验证所有前置条件是否满足
+        """Verify all preconditions are satisfied.
 
-                Returns:
-                    bool: 所有条件满足返回True, 任一条件失败返回False
+        Returns:
+            bool: True if all conditions are satisfied, False if any condition fails
         """
         for precondition in self.preconditions:
             if not precondition.check_precondition(deep_explore_object):

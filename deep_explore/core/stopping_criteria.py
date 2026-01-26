@@ -10,104 +10,105 @@ logger = logging.getLogger(__name__)
 
 
 class DeepExploreStoppingCriteria(ABC):
-    """停止条件的抽象基类"""
+    """Abstract base class for stopping criteria."""
 
     @abstractmethod
     def is_matched(self) -> bool:
-        """
-        检查停止条件是否满足
+        """Check if stopping criteria is satisfied.
 
         Returns:
-            bool: 满足条件返回True，否则False
+            bool: True if condition is satisfied, False otherwise
         """
         pass
 
 
 class DeepExploreStepStoppingCriteria(DeepExploreStoppingCriteria):
-    """基于步骤数的停止条件"""
+    """Step-based stopping criteria."""
 
     def __init__(self, max_steps):
-        """
+        """Initialize step stopping criteria.
+
         Args:
-            max_steps: 允许的最大步骤数
+            max_steps: Maximum allowed number of steps
         """
         self.max_steps = max_steps
-        self.current_step = -1  # 首次检查时递增为0
+        self.current_step = -1  # Increment to 0 on first check
 
     def is_matched(self):
-        """检查当前步骤数是否超过最大值"""
+        """Check if current step count exceeds maximum."""
         self.current_step += 1
         satisfied = self.current_step >= self.max_steps
         return satisfied
 
 
 class DeepExploreTimeStoppingCriteria(DeepExploreStoppingCriteria):
-    """基于时间的停止条件"""
+    """Time-based stopping criteria."""
 
     def __init__(self, duration):
-        """
+        """Initialize time stopping criteria.
+
         Args:
-            duration: 允许的最大持续时间(秒)
+            duration: Maximum allowed duration in seconds
         """
         self.start_time = time.time()
         self.duration = duration
 
     def is_matched(self):
-        """检查是否超过最大持续时间"""
+        """Check if maximum duration is exceeded."""
         elapsed = time.time() - self.start_time
         satisfied = elapsed >= self.duration
         return satisfied
 
 
 class DeepExploreEndTimeStoppingCriteria(DeepExploreStoppingCriteria):
-    """基于指定日期时间的停止条件"""
+    """Specific datetime-based stopping criteria."""
 
     def __init__(self, end_time_str):
-        """
+        """Initialize end time stopping criteria.
+
         Args:
-            end_time_str: 停止的具体日期时间字符串，
-                          格式要求: "YYYY-MM-DD HH:MM:SS"
-                          例如: "2026-01-21 16:00:00"
+            end_time_str: Specific datetime string for stopping,
+                          format required: "YYYY-MM-DD HH:MM:SS"
+                          example: "2026-01-21 16:00:00"
         """
-        # 定义时间格式
+        # Define time format
         time_format = "%Y-%m-%d %H:%M:%S"
 
-        # 将字符串解析为 datetime 对象
+        # Parse string to datetime object
         end_datetime = datetime.strptime(end_time_str, time_format)
 
-        # 将 datetime 对象转换为 Unix 时间戳（秒），便于后续直接进行数值比较
+        # Convert datetime object to Unix timestamp (seconds) for direct numerical comparison
         self.end_timestamp = end_datetime.timestamp()
 
     def is_matched(self):
-        """检查当前系统时间是否已达到或超过设定的截止时间"""
-        # 获取当前时间的时间戳
+        """Check if current system time has reached or exceeded the set deadline."""
+        # Get current time timestamp
         current_time = time.time()
 
-        # 如果当前时间大于等于目标截止时间，则停止
+        # Stop if current time is greater than or equal to target deadline
         satisfied = current_time >= self.end_timestamp
         return satisfied
 
 
 class DeepExploreStoppingCriteriaFactory:
-    """停止条件工厂类"""
+    """Stopping criteria factory class."""
 
     @staticmethod
     def create(criteria_type: str, **kwargs):
-        """
-        创建停止条件实例
+        """Create stopping criteria instance.
 
         Args:
-            criteria_type: 条件类型 ('step' 或 'time')
-            **kwargs: 类型所需参数
+            criteria_type: Criteria type ('step' or 'time')
+            **kwargs: Type-specific parameters
                 - 'step': max_steps
                 - 'time': duration
                 - 'end_time': end_time
 
         Returns:
-            DeepExploreStoppingCriteria: 停止条件实例
+            DeepExploreStoppingCriteria: Stopping criteria instance
 
         Raises:
-            ValueError: 不支持的类型
+            ValueError: Unsupported type
         """
         logger.info(f"Creating stopping criteria of type: {criteria_type}")
 

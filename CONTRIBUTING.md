@@ -125,7 +125,7 @@ The project supports Python 3.8+. New code should be compatible with Python 3.8.
 
 - Add docstrings to all public classes, functions, and methods
 - Use Google-style docstrings:
-   ```python
+   ```
    def example_function(param1: str, param2: int) -> bool:
        """
        Brief description of the function.

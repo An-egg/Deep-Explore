@@ -33,8 +33,8 @@ class DeepExploreUtil:
             """Recursively resolve single element."""
             # 1. Handle string type placeholders
             if isinstance(item, str):
-                if item.startswith(placeholder_prefix):
-                    method_name = item[len(placeholder_prefix):]
+                if placeholder_prefix in item:
+                    method_name = item.replace(placeholder_prefix, "")
                     if "=" in method_name:
                         tmp = method_name.split("=")
                         arg_name = tmp[0]
@@ -47,7 +47,11 @@ class DeepExploreUtil:
                 else:
                     if "=" in item:
                         tmp = item.split("=")
-                        item = (tmp[0], ast.literal_eval(tmp[1]))
+                        try:
+                            value = ast.literal_eval(tmp[1])
+                        except:
+                            value = tmp[1]
+                        item = (tmp[0], value)
                     return item
 
             # 2. Handle dictionary type: recursively resolve each value

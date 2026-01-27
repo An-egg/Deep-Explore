@@ -5,6 +5,7 @@ from .action_check import DeepExploreActionCheck
 from .action_executor import DeepExploreActionExecutor
 from .base_object import DeepExploreObject
 from .scenario import DeepExploreScenario
+from .loader import DeepExploreLoader
 from .mode import (
     DeepExploreMode,
     DeepExploreRandomScenarioMode,
@@ -44,4 +45,5 @@ __all__ = [
     "DeepExploreStepStoppingCriteria",
     "DeepExploreTimeStoppingCriteria",
     "DeepExploreEndTimeStoppingCriteria",
+    "DeepExploreLoader"
 ]

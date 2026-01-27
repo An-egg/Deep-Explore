@@ -5,14 +5,13 @@ import random
 import string
 import time
 
-from .. import DeepExplorePublicManager
-from ..core.action import DeepExploreAction
-from ..core.action_check import DeepExploreActionCheck
-from ..core.action_executor import DeepExploreActionExecutor
-from ..core.mode import DeepExploreModeFactory
-from ..core.precondition import DeepExplorePreconditionFactory
-from ..core.scenario import DeepExploreScenario
-from ..core.stopping_criteria import DeepExploreStoppingCriteriaFactory
+from . import DeepExploreAction
+from . import DeepExploreActionCheck
+from . import DeepExploreActionExecutor
+from . import DeepExploreScenario
+from .mode import DeepExploreModeFactory
+from .precondition import DeepExplorePreconditionFactory
+from .stopping_criteria import DeepExploreStoppingCriteriaFactory
 
 logger = logging.getLogger(__name__)
 
@@ -45,12 +44,19 @@ class DeepExploreLoader:
         ]
 
     @staticmethod
-    def _load_preconditions(precondition_configs):
+    def _load_preconditions(deep_explore_obj, precondition_configs):
         preconditions = []
         for config in precondition_configs:
-            args = [config["precondition_type"], config["precondition_data"]]
+            precondition_data = config["precondition_data"]
+
+            if config["precondition_type"] == "function":
+                precondition_data = DeepExploreActionCheck(
+                    deep_explore_obj, *config["precondition_data"])
+            args = [config["precondition_type"], precondition_data]
             if "compare_result" in config:
                 args.append(config["compare_result"])
+
+
             preconditions.append(DeepExplorePreconditionFactory.create(*args))
         return preconditions
 
@@ -69,21 +75,20 @@ class DeepExploreLoader:
     def _load_action_from_conf(deep_explore_obj, action_conf):
         action_id = action_conf.get("action_id", "")
         if action_id == "":
-            random_str = "".join(random.choices(string.ascii_lowercase,k=6))
+            random_str = "".join(random.choices(string.ascii_lowercase, k=6))
             timestamp = str(int(time.time() * 1000))
             action_id = random_str + timestamp
         executor = DeepExploreActionExecutor(
             action_id=action_id,
             action_name=action_conf["action_name"],
-            action_public_client=DeepExplorePublicManager.create_public_client(
-                action_conf["action_public_client"]),
+            action_public_client=action_conf["action_public_client"],
             except_meet_exception=action_conf.get(
                 "except_meet_exception", False),
             action_args=action_conf["action_args"]
         )
 
         preconditions = DeepExploreLoader._load_preconditions(
-            action_conf.get("action_precondition_list", [])
+            deep_explore_obj, action_conf.get("action_precondition_list", [])
         )
 
         pre_checks = DeepExploreLoader._load_action_checks(
@@ -139,7 +144,8 @@ class DeepExploreLoader:
         scenarios = []
         for scenario_conf in deep_explore_info["scenario_list"]:
             preconditions = DeepExploreLoader._load_preconditions(
-                scenario_conf.get("scenario_precondition_list", [])
+                deep_explore_obj, scenario_conf.get(
+                    "scenario_precondition_list", [])
             )
 
             actions = [

@@ -22,6 +22,7 @@ from .core import (
     DeepExploreStepStoppingCriteria,
     DeepExploreTimeStoppingCriteria,
     DeepExploreEndTimeStoppingCriteria,
+    DeepExploreLoader
 )
 
 from .factories import (
@@ -31,7 +32,6 @@ from .factories import (
 )
 
 from .utils import (
-    DeepExploreLoader,
     DeepExplorePublicManager,
     DeepExploreUtil,
 )

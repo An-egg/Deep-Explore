@@ -1,10 +1,7 @@
 # Copyright 2025 Leo John
 
 import logging
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from ..utils.util import DeepExploreUtil
+from ..utils.util import DeepExploreUtil
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +38,6 @@ class DeepExploreActionCheck:
         Raises:
             RuntimeError: Error occurred during check execution
         """
-        from ..utils.util import DeepExploreUtil
 
         try:
             # Dynamically import and return executable method

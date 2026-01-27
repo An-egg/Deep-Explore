@@ -2,11 +2,8 @@
 
 import logging
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from .action_check import DeepExploreActionCheck
-    from ..utils.util import DeepExploreUtil
+from ..utils.util import DeepExploreUtil
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +51,6 @@ class DeepExploreStatusPrecondition(DeepExplorePrecondition):
         Returns:
             bool: True if status is in allowed list, False otherwise.
         """
-        from ..utils.util import DeepExploreUtil
 
         current_status = deep_explore_object.get_status()
         result = current_status in DeepExploreUtil.resolve_args(
@@ -77,7 +73,6 @@ class DeepExploreMatchDataPrecondition(DeepExplorePrecondition):
 
     def check_precondition(self, deep_explore_object):
         """Recursively check if data contains specified structure."""
-        from ..utils.util import DeepExploreUtil
 
         def is_subset_recursive(sub, super_obj):
             """Recursively check subset relationship."""
@@ -121,20 +116,33 @@ class DeepExploreMatchDataPrecondition(DeepExplorePrecondition):
 
 
 class DeepExploreFunctionPrecondition(DeepExplorePrecondition):
-    """Function result matching precondition, verifies if result matches expectation."""
+    """Function result matching precondition, verifies if result matches expectation.
+
+    Attributes:
+        deep_explore_check: Check method object.
+        compare_result: Expected precondition result.
+    """
 
     def __init__(
-            self, deep_explore_check: DeepExploreActionCheck, compare_result):
+            self, deep_explore_check, compare_result):
         """Initialize function precondition.
 
         Args:
-            deep_explore_check: Check method object
-            compare_result: Expected precondition result
+            deep_explore_check: Check method object.
+            compare_result: Expected precondition result.
         """
         self.deep_explore_check = deep_explore_check
         self.compare_result = compare_result
 
     def check_precondition(self, deep_explore_object):
+        """Check if function result matches expectation.
+
+        Args:
+            deep_explore_object: Target object to check.
+
+        Returns:
+            bool: True if result matches expectation, False otherwise.
+        """
         return self.deep_explore_check.check() == self.compare_result
 
 

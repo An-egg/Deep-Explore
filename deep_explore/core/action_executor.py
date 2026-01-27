@@ -2,10 +2,8 @@
 
 import logging
 from dataclasses import dataclass, field
-from typing import Any, TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from ..utils.util import DeepExploreUtil
+from typing import Any
+from ..utils.util import DeepExploreUtil
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +26,6 @@ class DeepExploreActionExecutor:
 
     def exec_action(self, deep_explore_object):
         """Execute action."""
-        from ..utils.util import DeepExploreUtil
 
         action_name = self.action_name
         logger.info(f"Executing action: {action_name}")

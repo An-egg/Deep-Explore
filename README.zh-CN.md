@@ -11,7 +11,7 @@
 
 - **状态机支持**: 通过自动缓存和重试机制跟踪实例状态
 - **基于模型的测试**: 多种执行策略（随机/顺序场景和动作）
-- **灵活的停止条件**: 基于时间、步数或自定义结束条件
+- **灵活地停止条件**: 基于时间、步数或自定义结束条件
 - **前置条件验证**: 状态匹配、数据匹配和自定义函数检查
 - **场景组合**: 将多个动作组合成复杂的测试场景
 - **配置驱动**: 通过 YAML/JSON 定义测试，无需修改代码
@@ -45,7 +45,7 @@ class MyTestObject(DeepExploreObject):
         # 返回当前状态
         return self.data.get('status')
 
-    def _resolver_instance_id(self):
+    def instance_id(self):
         # 动态参数解析器
         return self.data['id']
 ```

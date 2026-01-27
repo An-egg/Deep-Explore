@@ -45,7 +45,7 @@ class MyTestObject(DeepExploreObject):
         # Return the current status
         return self.data.get('status')
     
-    def _resolver_instance_id(self):
+    def instance_id(self):
         # Resolver for dynamic parameters
         return self.data['id']
 ```

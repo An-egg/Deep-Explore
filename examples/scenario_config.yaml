@@ -1,58 +1,64 @@
 # Scenario Test Configuration Example
+# This YAML file demonstrates how to configure DeepExplore tests using YAML
 
 mode_type: random_scenario
 
 stopping_criteria_list:
   - criteria_type: step
-    max_steps: 50
+    max_steps: 10
 
 scenario_list:
-  - scenario_name: "Create and Delete VM"
+  - scenario_name: "Create and Start VM"
     scenario_precondition_list:
       - precondition_type: status
         precondition_data: ["available"]
         compare_result: true
     action_list:
       - action_id: "create_vm"
-        action_name: "create_instance"
-        action_public_client: "vm_client.VMClient"
+        action_name: "create_vm"
+        action_public_client: "examples.scenario_test.VMClient"
         action_args:
-          - name: "test-vm"
-          - flavor_id: "small"
-          - image_id: "ubuntu-20.04"
-        action_pre_check_list:
-          - check_info: ["checks.check_quota"]
-            check_result: true
+          - vm_name="test-vm"
+          - flavor="medium"
+          - image="ubuntu-20.04"
         action_post_check_list:
-          - check_info: ["checks.check_vm_status", "_resolver_vm_id"]
-            check_result: "running"
+          - check_info: ["examples.scenario_test.check_vm_created", "_resolver_vm_id"]
+            check_result: true
 
-      - action_id: "delete_vm"
-        action_name: "delete_instance"
-        action_public_client: "vm_client.VMClient"
+      - action_id: "start_vm"
+        action_name: "start_vm"
+        action_public_client: "examples.scenario_test.VMClient"
         action_args:
-          - "_resolver_vm_id"
+          - vm_id="_resolver_vm_id"
         action_precondition_list:
           - precondition_type: status
-            precondition_data: ["running", "stopped"]
+            precondition_data: ["creating"]
             compare_result: true
+        action_post_check_list:
+          - check_info: ["examples.scenario_test.check_vm_running", "_resolver_vm_id"]
+            check_result: true
 
-  - scenario_name: "VM Power Cycle"
+  - scenario_name: "Stop and Delete VM"
     scenario_precondition_list:
-      - precondition_type: data
-        precondition_data:
-          status: "running"
-          active: true
+      - precondition_type: status
+        precondition_data: ["running"]
         compare_result: true
     action_list:
       - action_id: "stop_vm"
-        action_name: "stop_instance"
-        action_public_client: "vm_client.VMClient"
+        action_name: "stop_vm"
+        action_public_client: "examples.scenario_test.VMClient"
         action_args:
-          - "_resolver_vm_id"
+          - vm_id="_resolver_vm_id"
+        action_post_check_list:
+          - check_info: ["examples.scenario_test.check_vm_stopped", "_resolver_vm_id"]
+            check_result: true
 
-      - action_id: "start_vm"
-        action_name: "start_instance"
-        action_public_client: "vm_client.VMClient"
+      - action_id: "delete_vm"
+        action_name: "delete_vm"
+        action_public_client: "examples.scenario_test.VMClient"
         action_args:
-          - "_resolver_vm_id"
+          - vm_id="_resolver_vm_id"
+        action_precondition_list:
+          - precondition_type: status
+            precondition_data: ["stopped"]
+            compare_result: true

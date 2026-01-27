@@ -8,7 +8,7 @@ class DeepExplorePublicManager:
 
     @staticmethod
     def create_public_client(
-            public_client_absolute_path, *args, **wkargs):
+            public_client_absolute_path, *args, **kwargs):
         """Dynamically create corresponding client object based on given public client name.
 
         Args:
@@ -33,7 +33,7 @@ class DeepExplorePublicManager:
             client_class = getattr(module, class_name)
 
             # Create instance and return
-            return client_class(*args, **wkargs)
+            return client_class(*args, **kwargs)
 
         except ImportError as e:
             raise ImportError(

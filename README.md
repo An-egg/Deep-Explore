@@ -157,12 +157,49 @@ For detailed architecture documentation, see [docs/deep_explore架构设计文�
 
 ## Examples
 
-See the [examples/](examples/) directory for complete usage examples:
+See the [examples/](examples/) directory for comprehensive usage examples demonstrating all features of DeepExplore.
 
-- [Basic Setup](examples/basic_setup.py)
-- [Scenario Testing](examples/scenario_test.py)
-- [Custom Mode](examples/custom_mode.py)
-- [Cloud VM Testing](examples/vm_testing.py)
+### Example Files
+
+| Example | Level | Description |
+|---------|-------|-------------|
+| [Basic Setup](examples/basic_setup.py) | Beginner | Core concepts, test objects, resolvers, and basic execution modes |
+| [Scenario Testing](examples/scenario_test.py) | Intermediate | Complex scenarios with multiple actions and scenario-level preconditions |
+| [Custom Mode](examples/custom_mode.py) | Advanced | Creating custom test modes and extending the framework |
+| [Advanced Usage](examples/advanced_usage.py) | Advanced | Data matching, multiple stopping criteria, error handling, and update control |
+| [YAML Configuration](examples/scenario_config.yaml) | All | Example YAML configuration for scenario-based testing |
+
+### Common Mock Module
+
+All examples share a common mock module (`examples/common/`) that provides reusable mock clients and check functions:
+
+**Available Mock Clients:**
+- `ResourceClient` - Resource management (start, stop, restart)
+- `VMClient` - Virtual machine operations (create, start, stop, delete)
+- `TaskClient` - Task queue management (process, retry, complete)
+- `DatabaseClient` - Database operations (create, scale, add replica, delete)
+
+**Available Check Functions:**
+- `check_resource_started`, `check_resource_stopped`
+- `check_vm_created`, `check_vm_running`, `check_vm_stopped`
+- `check_database_created`, `check_database_scaled`
+- `check_high_priority`
+
+### Running Examples
+
+```bash
+# Run individual examples
+python examples/basic_setup.py
+python examples/scenario_test.py
+python examples/custom_mode.py
+python examples/advanced_usage.py
+
+# Or run from examples directory
+cd examples
+python basic_setup.py
+```
+
+For detailed documentation of each example, see [examples/README.md](examples/README.md).
 
 ## Contributing
 

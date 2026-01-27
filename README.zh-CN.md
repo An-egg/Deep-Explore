@@ -157,12 +157,49 @@ mode.exec_test()
 
 ## 示例
 
-查看 [examples/](examples/) 目录获取完整的使用示例：
+查看 [examples/](examples/) 目录获取展示 DeepExplore 所有功能的综合使用示例。
 
-- [基础设置](examples/basic_setup.py)
-- [场景测试](examples/scenario_test.py)
-- [自定义模式](examples/custom_mode.py)
-- [云虚拟机测试](examples/vm_testing.py)
+### 示例文件
+
+| 示例 | 难度 | 描述 |
+|------|------|------|
+| [基础设置](examples/basic_setup.py) | 初级 | 核心概念、测试对象、参数解析器和基本执行模式 |
+| [场景测试](examples/scenario_test.py) | 中级 | 包含多个动作和场景级前置条件的复杂场景 |
+| [自定义模式](examples/custom_mode.py) | 高级 | 创建自定义测试模式和扩展框架 |
+| [高级用法](examples/advanced_usage.py) | 高级 | 数据匹配、多重停止条件、错误处理和更新控制 |
+| [YAML 配置](examples/scenario_config.yaml) | 全部 | 基于场景测试的 YAML 配置示例 |
+
+### 公共 Mock 模块
+
+所有示例都共享一个公共 mock 模块（`examples/common/`），提供可重用的 mock 客户端和检查函数：
+
+**可用的 Mock 客户端：**
+- `ResourceClient` - 资源管理（启动、停止、重启）
+- `VMClient` - 虚拟机操作（创建、启动、停止、删除）
+- `TaskClient` - 任务队列管理（处理、重试、完成）
+- `DatabaseClient` - 数据库操作（创建、扩容、添加副本、删除）
+
+**可用的检查函数：**
+- `check_resource_started`, `check_resource_stopped`
+- `check_vm_created`, `check_vm_running`, `check_vm_stopped`
+- `check_database_created`, `check_database_scaled`
+- `check_high_priority`
+
+### 运行示例
+
+```bash
+# 运行单个示例
+python examples/basic_setup.py
+python examples/scenario_test.py
+python examples/custom_mode.py
+python examples/advanced_usage.py
+
+# 或从 examples 目录运行
+cd examples
+python basic_setup.py
+```
+
+每个示例的详细文档请参阅 [examples/README.md](examples/README.md)。
 
 ## 贡献
 

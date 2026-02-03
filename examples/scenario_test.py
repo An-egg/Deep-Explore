@@ -8,15 +8,15 @@ This example demonstrates how to:
 4. Track scenario execution statistics
 """
 
-import sys
 import os
+import sys
 
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from deep_explore import DeepExploreObject
 from deep_explore import DeepExploreLoader
-from examples.common import VMClient
+from examples.common.mock_clients import VMClient
 
 class VMTestObject(DeepExploreObject):
     """Virtual Machine test object for cloud platform testing.

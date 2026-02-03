@@ -3,6 +3,7 @@
 import logging
 from dataclasses import dataclass, field
 from typing import Any
+
 from ..utils.util import DeepExploreUtil
 
 logger = logging.getLogger(__name__)
@@ -44,6 +45,8 @@ class DeepExploreActionExecutor:
                 result = method(*action_args) if callable(method) else None
         except Exception as e:
             if not self.except_meet_exception:
-                raise Exception(f"Unexpected exception during action execution: {e}")
-            logger.warning(f"Exception during action execution: {e}, but exception was expected for this action")
+                raise Exception(
+                    f"Unexpected exception during action execution: {e}")
+            logger.warning(f"Exception during action execution: {e}, "
+                           f"but exception was expected for this action")
         return result

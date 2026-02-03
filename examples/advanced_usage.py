@@ -9,15 +9,15 @@ This example demonstrates advanced features:
 5. Update position control
 """
 
-import sys
 import os
+import sys
 
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from deep_explore import DeepExploreObject
 from deep_explore import DeepExploreLoader
-from examples.common import DatabaseClient
+from examples.common.mock_clients import DatabaseClient
 
 class AdvancedTestObject(DeepExploreObject):
     """Advanced test object for demonstrating complex features.
@@ -44,7 +44,8 @@ class AdvancedTestObject(DeepExploreObject):
 
         Simulates fetching current database state from cloud API.
         """
-        print(f"  [State Update] DB {self.data['db_id']} status: {self.data['status']}")
+        print(f"  [State Update] DB {self.data['db_id']} status: "
+              f"{self.data['status']}")
         print(f"  [State Update] DB details: {self.data}")
 
     def get_status(self) -> str:

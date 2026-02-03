@@ -80,7 +80,7 @@ Follow these guidelines for commit messages:
 
 - Use clear, descriptive messages
 - Use imperative mood ("Add feature" not "Added feature")
-- Limit the first line to 72 characters or less
+- Limit the first line to 72 characters or fewer
 - Reference relevant issue numbers:
 
    ```

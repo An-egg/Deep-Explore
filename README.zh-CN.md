@@ -132,42 +132,42 @@ mode.exec_test()
 
 ## 支持的测试模式
 
-| 模式 | 描述 |
-|------|------|
-| `random_scenario` | 随机选择并执行场景 |
+| 模式                  | 描述            |
+|---------------------|---------------|
+| `random_scenario`   | 随机选择并执行场景     |
 | `sequence_scenario` | 按顺序执行场景（支持反向） |
-| `random_action` | 随机选择并执行单个动作 |
-| `sequence_action` | 按顺序执行动作（支持反向） |
+| `random_action`     | 随机选择并执行单个动作   |
+| `sequence_action`   | 按顺序执行动作（支持反向） |
 
 ## 停止条件
 
-| 类型 | 描述 |
-|------|------|
-| `step` | 执行 N 步后停止 |
-| `time` | T 秒后停止 |
-| `end_time` | 在指定时间戳停止 |
+| 类型         | 描述        |
+|------------|-----------|
+| `step`     | 执行 N 步后停止 |
+| `time`     | T 秒后停止    |
+| `end_time` | 在指定时间戳停止  |
 
 ## 前置条件类型
 
-| 类型 | 描述 |
-|------|------|
-| `status` | 匹配对象状态到列表 |
-| `data` | 匹配对象数据结构 |
+| 类型         | 描述        |
+|------------|-----------|
+| `status`   | 匹配对象状态到列表 |
+| `data`     | 匹配对象数据结构  |
 | `function` | 执行自定义检查函数 |
 
 ## 示例
 
-查看 [examples/](examples/) 目录获取展示 DeepExplore 所有功能的综合使用示例。
+查看 [examples/](examples) 目录获取展示 DeepExplore 所有功能的综合使用示例。
 
 ### 示例文件
 
-| 示例 | 难度 | 描述 |
-|------|------|------|
-| [基础设置](examples/basic_setup.py) | 初级 | 核心概念、测试对象、参数解析器和基本执行模式 |
-| [场景测试](examples/scenario_test.py) | 中级 | 包含多个动作和场景级前置条件的复杂场景 |
-| [自定义模式](examples/custom_mode.py) | 高级 | 创建自定义测试模式和扩展框架 |
-| [高级用法](examples/advanced_usage.py) | 高级 | 数据匹配、多重停止条件、错误处理和更新控制 |
-| [YAML 配置](examples/scenario_config.yaml) | 全部 | 基于场景测试的 YAML 配置示例 |
+| 示例                                       | 难度 | 描述                     |
+|------------------------------------------|----|------------------------|
+| [基础设置](examples/basic_setup.py)          | 初级 | 核心概念、测试对象、参数解析器和基本执行模式 |
+| [场景测试](examples/scenario_test.py)        | 中级 | 包含多个动作和场景级前置条件的复杂场景    |
+| [自定义模式](examples/custom_mode.py)         | 高级 | 创建自定义测试模式和扩展框架         |
+| [高级用法](examples/advanced_usage.py)       | 高级 | 数据匹配、多重停止条件、错误处理和更新控制  |
+| [YAML 配置](examples/scenario_config.yaml) | 全部 | 基于场景测试的 YAML 配置示例      |
 
 ### 公共 Mock 模块
 

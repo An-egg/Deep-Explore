@@ -8,15 +8,15 @@ This example demonstrates how to:
 4. Use preconditions and stopping criteria
 """
 
-import sys
 import os
+import sys
 
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from deep_explore import DeepExploreObject
 from deep_explore import DeepExploreLoader
-from examples.common import ResourceClient
+from examples.common.mock_clients import ResourceClient
 
 
 class SimpleTestObject(DeepExploreObject):
@@ -235,7 +235,8 @@ def example_time_based_stopping():
                 "action_precondition_list": [
                     {
                         "precondition_type": "status",
-                        "precondition_data": ["available", "running", "stopped"],
+                        "precondition_data": [
+                            "available", "running", "stopped"],
                         "compare_result": True
                     }
                 ]

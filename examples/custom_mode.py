@@ -8,16 +8,16 @@ This example demonstrates how to:
 4. Integrate with the factory pattern
 """
 
-import sys
-import os
 import logging
+import os
+import sys
 
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from deep_explore import DeepExploreObject, DeepExploreMode
 from deep_explore import DeepExploreLoader
-from examples.common import TaskClient
+from examples.common.mock_clients import TaskClient
 
 logger = logging.getLogger(__name__)
 

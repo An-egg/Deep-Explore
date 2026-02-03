@@ -132,42 +132,43 @@ For detailed architecture documentation, see [docs/deep_explore架构设计文�
 
 ## Supported Test Modes
 
-| Mode | Description |
-|------|-------------|
-| `random_scenario` | Randomly select and execute scenarios |
-| `sequence_scenario` | Execute scenarios in order (supports reverse) |
-| `random_action` | Randomly select and execute individual actions |
-| `sequence_action` | Execute actions in order (supports reverse) |
+| Mode                | Description                                    |
+|---------------------|------------------------------------------------|
+| `random_scenario`   | Randomly select and execute scenarios          |
+| `sequence_scenario` | Execute scenarios in order (supports reverse)  |
+| `random_action`     | Randomly select and execute individual actions |
+| `sequence_action`   | Execute actions in order (supports reverse)    |
 
 ## Stopping Criteria
 
-| Type | Description |
-|------|-------------|
-| `step` | Stop after N steps |
-| `time` | Stop after T seconds |
+| Type       | Description                |
+|------------|----------------------------|
+| `step`     | Stop after N steps         |
+| `time`     | Stop after T seconds       |
 | `end_time` | Stop at specific timestamp |
 
 ## Precondition Types
 
-| Type | Description |
-|------|-------------|
-| `status` | Match object status against list |
-| `data` | Match object data structure |
-| `function` | Execute custom check function |
+| Type       | Description                      |
+|------------|----------------------------------|
+| `status`   | Match object status against list |
+| `data`     | Match object data structure      |
+| `function` | Execute custom check function    |
 
 ## Examples
 
-See the [examples/](examples/) directory for comprehensive usage examples demonstrating all features of DeepExplore.
+See the [examples/](examples) directory for comprehensive usage examples
+demonstrating all features of DeepExplore.
 
 ### Example Files
 
-| Example | Level | Description |
-|---------|-------|-------------|
-| [Basic Setup](examples/basic_setup.py) | Beginner | Core concepts, test objects, resolvers, and basic execution modes |
-| [Scenario Testing](examples/scenario_test.py) | Intermediate | Complex scenarios with multiple actions and scenario-level preconditions |
-| [Custom Mode](examples/custom_mode.py) | Advanced | Creating custom test modes and extending the framework |
-| [Advanced Usage](examples/advanced_usage.py) | Advanced | Data matching, multiple stopping criteria, error handling, and update control |
-| [YAML Configuration](examples/scenario_config.yaml) | All | Example YAML configuration for scenario-based testing |
+| Example                                             | Level        | Description                                                                   |
+|-----------------------------------------------------|--------------|-------------------------------------------------------------------------------|
+| [Basic Setup](examples/basic_setup.py)              | Beginner     | Core concepts, test objects, resolvers, and basic execution modes             |
+| [Scenario Testing](examples/scenario_test.py)       | Intermediate | Complex scenarios with multiple actions and scenario-level preconditions      |
+| [Custom Mode](examples/custom_mode.py)              | Advanced     | Creating custom test modes and extending the framework                        |
+| [Advanced Usage](examples/advanced_usage.py)        | Advanced     | Data matching, multiple stopping criteria, error handling, and update control |
+| [YAML Configuration](examples/scenario_config.yaml) | All          | Example YAML configuration for scenario-based testing                         |
 
 ### Common Mock Module
 

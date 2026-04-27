@@ -214,12 +214,17 @@ action_config = {
 
 ### Execution Modes
 
-**Random Action Mode:**
+**Random Scenario Mode:**
 ```python
 config = {
-    "mode_type": "random_action",
+    "mode_type": "random_scenario",
     "stopping_criteria_list": [...],
-    "action_list": [...]
+    "scenario_list": [
+        {
+            "scenario_name": "My Scenario",
+            "action_list": [...]  # Single action for action-mode equivalent
+        }
+    ]
 }
 ```
 

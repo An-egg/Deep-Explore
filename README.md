@@ -113,7 +113,6 @@ mode.exec_test()
 ├─────────────────────────────────────────────────────────┤
 │  DeepExploreMode (MBT Strategies)                       │
 │   • RandomScenario   • SequenceScenario                 │
-│   • RandomAction     • SequenceAction                   │
 ├─────────────────────────────────────────────────────────┤
 │  DeepExploreObject (FSM State Management)               │
 │   • State Tracking   • ERIS Integration                 │
@@ -136,8 +135,8 @@ For detailed architecture documentation, see [docs/deep_explore架构设计文�
 |---------------------|------------------------------------------------|
 | `random_scenario`   | Randomly select and execute scenarios          |
 | `sequence_scenario` | Execute scenarios in order (supports reverse)  |
-| `random_action`     | Randomly select and execute individual actions |
-| `sequence_action`   | Execute actions in order (supports reverse)    |
+
+**Note:** When a scenario contains only one action, it functions equivalently to the former action mode.
 
 ## Stopping Criteria
 

@@ -113,7 +113,6 @@ mode.exec_test()
 ├─────────────────────────────────────────────────────────┤
 │  DeepExploreMode (MBT Strategies)                       │
 │   • RandomScenario   • SequenceScenario                 │
-│   • RandomAction     • SequenceAction                   │
 ├─────────────────────────────────────────────────────────┤
 │  DeepExploreObject (FSM State Management)               │
 │   • State Tracking   • ERIS Integration                 │
@@ -136,8 +135,8 @@ mode.exec_test()
 |---------------------|---------------|
 | `random_scenario`   | 随机选择并执行场景     |
 | `sequence_scenario` | 按顺序执行场景（支持反向） |
-| `random_action`     | 随机选择并执行单个动作   |
-| `sequence_action`   | 按顺序执行动作（支持反向） |
+
+**注意：** 当场景中仅包含一个动作时，其功能等同于之前的 action 模式。
 
 ## 停止条件
 

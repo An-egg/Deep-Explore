@@ -1,14 +1,14 @@
-# DeepExplore Production Dependencies
-# No external dependencies are required for the core functionality
+# DeepExplore Dependencies
+# Core functionality has no external dependencies
 
-# Optional dependencies (install with: pip install deep-explore[yaml])
-pyyaml>=6.0; extra == "yaml"
+# Optional YAML support (install with: pip install deep-explore[yaml])
+pyyaml>=6.0
 
 # Development dependencies (install with: pip install deep-explore[dev])
-pytest>=7.0; extra == "dev"
-pytest-cov>=4.0; extra == "dev"
-black>=22.0; extra == "dev"
-flake8>=5.0; extra == "dev"
-mypy>=1.0; extra == "dev"
-sphinx>=5.0; extra == "dev"
-sphinx-rtd-theme>=1.0; extra == "dev"
+pytest>=7.0
+pytest-cov>=4.0
+black>=22.0
+flake8>=5.0
+mypy>=1.0
+sphinx>=5.0
+sphinx-rtd-theme>=1.0

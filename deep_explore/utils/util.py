@@ -126,12 +126,8 @@ class DeepExploreUtil:
                 DeepExploreUtil._check_action_list(
                     scenario.get("action_list", []), path, valid_resolvers,
                     errors)
-        elif "action" in mode:
-            DeepExploreUtil._check_action_list(
-                config.get("action_list", []), "action_list", valid_resolvers,
-                errors)
         else:
-            errors.append(f"Unknown mode_type: {mode}")
+            errors.append(f"Unsupported mode_type: {mode}")
 
         return errors
 
@@ -149,8 +145,21 @@ class DeepExploreUtil:
     @staticmethod
     def _validate_single_action(action, path, valid_resolvers, errors):
         client_path = action.get("action_public_client", "")
-        if client_path and not client_path.startswith("hours"):
-            client_path = "hours.common.public." + client_path
+        # Handle class reference (not a string path)
+        if not isinstance(client_path, str):
+            client_cls = client_path
+            method_name = action.get("action_name")
+            if client_cls and method_name:
+                if not hasattr(client_cls, method_name):
+                    errors.append(f"[{path}] Method not found in class: {method_name}")
+                else:
+                    DeepExploreUtil._check_resolvers_in_args(
+                        action.get("action_args", []), path, valid_resolvers,
+                        errors)
+                    DeepExploreUtil._check_arg_count(
+                        getattr(client_cls, method_name),
+                        action.get("action_args", []), path, errors)
+            return
 
         method_name = action.get("action_name")
         args = action.get("action_args", [])

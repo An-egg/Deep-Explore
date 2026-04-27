@@ -91,14 +91,63 @@ class DeepExploreEndTimeStoppingCriteria(DeepExploreStoppingCriteria):
 
 
 class DeepExploreStoppingCriteriaFactory:
-    """Stopping criteria factory class."""
+    """Stopping criteria factory class.
+
+    Supports runtime registration of custom criteria types via the
+    :meth:`register` class method.
+    """
+
+    _custom_criteria: dict = {}
+
+    @classmethod
+    def register(cls, criteria_type: str, criteria_class: type) -> None:
+        """Register a custom stopping criteria type.
+
+        Args:
+            criteria_type: Unique string identifier for the criteria type.
+            criteria_class: Criteria class (must be a subclass of
+                DeepExploreStoppingCriteria).
+
+        Raises:
+            TypeError: If criteria_class is not a subclass of
+                DeepExploreStoppingCriteria.
+            ValueError: If criteria_type is already registered.
+        """
+        if not (isinstance(criteria_class, type)
+                and issubclass(criteria_class, DeepExploreStoppingCriteria)):
+            raise TypeError(
+                f"criteria_class must be a subclass of "
+                f"DeepExploreStoppingCriteria, got {criteria_class}")
+        if criteria_type in cls._custom_criteria:
+            raise ValueError(
+                f"Criteria type '{criteria_type}' is already registered. "
+                f"Use a different name or unregister first.")
+        cls._custom_criteria[criteria_type] = criteria_class
+        logger.info(f"Registered custom criteria type: {criteria_type}")
+
+    @classmethod
+    def unregister(cls, criteria_type: str) -> bool:
+        """Unregister a previously registered custom criteria type.
+
+        Args:
+            criteria_type: The criteria type identifier to unregister.
+
+        Returns:
+            bool: True if the type was found and removed, False otherwise.
+        """
+        if criteria_type in cls._custom_criteria:
+            del cls._custom_criteria[criteria_type]
+            logger.info(f"Unregistered criteria type: {criteria_type}")
+            return True
+        return False
 
     @staticmethod
     def create(criteria_type: str, **kwargs):
         """Create stopping criteria instance.
 
         Args:
-            criteria_type: Criteria type ('step' or 'time')
+            criteria_type: Criteria type ('step', 'time', 'end_time',
+                or any custom registered type).
             **kwargs: Type-specific parameters
                 - 'step': max_steps
                 - 'time': duration
@@ -120,5 +169,11 @@ class DeepExploreStoppingCriteriaFactory:
 
         elif criteria_type == "end_time":
             return DeepExploreEndTimeStoppingCriteria(kwargs["end_time"])
+
+        # Check custom registered types
+        custom_class = DeepExploreStoppingCriteriaFactory._custom_criteria.get(
+            criteria_type)
+        if custom_class is not None:
+            return custom_class(**kwargs)
 
         raise ValueError(f"Unsupported criteria type: {criteria_type}")

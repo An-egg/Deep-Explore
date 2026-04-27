@@ -21,9 +21,9 @@ class DeepExploreAction:
         update_positions: List of positions to execute object update actions.
     """
     action_executor: Any
-    preconditions: list
-    pre_checks: list
-    post_checks: list
+    preconditions: List[Any] = field(default_factory=list)
+    pre_checks: List[Any] = field(default_factory=list)
+    post_checks: List[Any] = field(default_factory=list)
     update_positions: List[str] = field(default_factory=lambda: ["end"])
 
     def exec_action(self, deep_explore_object):

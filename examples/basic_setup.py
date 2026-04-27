@@ -70,67 +70,78 @@ class SimpleTestObject(DeepExploreObject):
         return self.data['name']
 
 
-def example_random_action_mode():
-    """Example: Random action mode.
+def example_random_scenario_mode():
+    """Example: Random scenario mode.
 
-    Randomly executes actions until stopping criteria are met.
+    Randomly executes scenarios until stopping criteria are met.
+    Each scenario contains a single action (equivalent to action mode).
     """
     print("\n" + "="*60)
-    print("Example 1: Random Action Mode")
+    print("Example 1: Random Scenario Mode")
     print("="*60)
 
     # Create the test object
     test_obj = SimpleTestObject()
 
-    # Configuration for random action mode
+    # Configuration for random scenario mode with single-action scenarios
     config = {
-        "mode_type": "random_action",
+        "mode_type": "random_scenario",
         "stopping_criteria_list": [
             {
                 "criteria_type": "step",
                 "max_steps": 3
             }
         ],
-        "action_list": [
+        "scenario_list": [
             {
-                "action_name": "start_resource",
-                "action_public_client": ResourceClient,
-                "action_args": [
-                    "resource_id=_resolver_resource_id"
-                ],
-                "action_precondition_list": [
+                "scenario_name": "Start Resource",
+                "scenario_precondition_list": [
                     {
                         "precondition_type": "status",
                         "precondition_data": ["available"],
                         "compare_result": True
                     }
                 ],
-                "action_post_check_list": [
+                "action_list": [
                     {
-                        "check_info": ["examples.common.check_resource_started",
-                                     "_resolver_resource_id"],
-                        "check_result": True
+                        "action_name": "start_resource",
+                        "action_public_client": ResourceClient,
+                        "action_args": [
+                            "resource_id=_resolver_resource_id"
+                        ],
+                        "action_post_check_list": [
+                            {
+                                "check_info": ["examples.common.check_resource_started",
+                                             "_resolver_resource_id"],
+                                "check_result": True
+                            }
+                        ]
                     }
                 ]
             },
             {
-                "action_name": "stop_resource",
-                "action_public_client": ResourceClient,
-                "action_args": [
-                    "_resolver_resource_id=resource_id"
-                ],
-                "action_precondition_list": [
+                "scenario_name": "Stop Resource",
+                "scenario_precondition_list": [
                     {
                         "precondition_type": "status",
                         "precondition_data": ["running"],
                         "compare_result": True
                     }
                 ],
-                "action_post_check_list": [
+                "action_list": [
                     {
-                        "check_info": ["examples.common.check_resource_stopped",
-                                     "_resolver_resource_id"],
-                        "check_result": True
+                        "action_name": "stop_resource",
+                        "action_public_client": ResourceClient,
+                        "action_args": [
+                            "_resolver_resource_id=resource_id"
+                        ],
+                        "action_post_check_list": [
+                            {
+                                "check_info": ["examples.common.check_resource_stopped",
+                                             "_resolver_resource_id"],
+                                "check_result": True
+                            }
+                        ]
                     }
                 ]
             }
@@ -141,56 +152,81 @@ def example_random_action_mode():
     mode = DeepExploreLoader.load_deep_explore_mode(test_obj, config)
     mode.exec_test()
 
-    print("\nRandom action mode example completed!")
+    print("\nRandom scenario mode example completed!")
 
 
-def example_sequence_action_mode():
-    """Example: Sequential action mode.
+def example_sequence_scenario_mode():
+    """Example: Sequential scenario mode.
 
-    Executes actions in order.
+    Executes scenarios in order.
+    Each scenario contains a single action (equivalent to action mode).
     """
     print("\n" + "="*60)
-    print("Example 2: Sequential Action Mode")
+    print("Example 2: Sequential Scenario Mode")
     print("="*60)
 
     # Create the test object
     test_obj = SimpleTestObject()
 
-    # Configuration for sequential action mode
+    # Configuration for sequential scenario mode with single-action scenarios
     config = {
-        "mode_type": "sequence_action",
+        "mode_type": "sequence_scenario",
         "stopping_criteria_list": [
             {
                 "criteria_type": "step",
                 "max_steps": 2
             }
         ],
-        "action_list": [
+        "scenario_list": [
             {
-                "action_name": "start_resource",
-                "action_public_client": ResourceClient,
-                "action_args": [
-                    "resource_id=_resolver_resource_id"
-                ],
-                "action_precondition_list": [
+                "scenario_name": "Start Resource",
+                "scenario_precondition_list": [
                     {
                         "precondition_type": "status",
                         "precondition_data": ["available"],
                         "compare_result": True
                     }
+                ],
+                "action_list": [
+                    {
+                        "action_name": "start_resource",
+                        "action_public_client": ResourceClient,
+                        "action_args": [
+                            "resource_id=_resolver_resource_id"
+                        ],
+                        "action_post_check_list": [
+                            {
+                                "check_info": ["examples.common.check_resource_started",
+                                             "_resolver_resource_id"],
+                                "check_result": True
+                            }
+                        ]
+                    }
                 ]
             },
             {
-                "action_name": "stop_resource",
-                "action_public_client": ResourceClient,
-                "action_args": [
-                    "resource_id=_resolver_resource_id"
-                ],
-                "action_precondition_list": [
+                "scenario_name": "Stop Resource",
+                "scenario_precondition_list": [
                     {
                         "precondition_type": "status",
                         "precondition_data": ["running"],
                         "compare_result": True
+                    }
+                ],
+                "action_list": [
+                    {
+                        "action_name": "stop_resource",
+                        "action_public_client": ResourceClient,
+                        "action_args": [
+                            "resource_id=_resolver_resource_id"
+                        ],
+                        "action_post_check_list": [
+                            {
+                                "check_info": ["examples.common.check_resource_stopped",
+                                             "_resolver_resource_id"],
+                                "check_result": True
+                            }
+                        ]
                     }
                 ]
             }
@@ -201,7 +237,7 @@ def example_sequence_action_mode():
     mode = DeepExploreLoader.load_deep_explore_mode(test_obj, config)
     mode.exec_test()
 
-    print("\nSequential action mode example completed!")
+    print("\nSequential scenario mode example completed!")
 
 
 def example_time_based_stopping():
@@ -216,28 +252,33 @@ def example_time_based_stopping():
     # Create the test object
     test_obj = SimpleTestObject()
 
-    # Configuration with time-based stopping
+    # Configuration with time-based stopping using scenario mode
     config = {
-        "mode_type": "random_action",
+        "mode_type": "random_scenario",
         "stopping_criteria_list": [
             {
                 "criteria_type": "time",
                 "duration": 2  # Stop after 2 seconds
             }
         ],
-        "action_list": [
+        "scenario_list": [
             {
-                "action_name": "restart_resource",
-                "action_public_client": ResourceClient,
-                "action_args": [
-                    "resource_id=_resolver_resource_id"
-                ],
-                "action_precondition_list": [
+                "scenario_name": "Restart Resource",
+                "action_list": [
                     {
-                        "precondition_type": "status",
-                        "precondition_data": [
-                            "available", "running", "stopped"],
-                        "compare_result": True
+                        "action_name": "restart_resource",
+                        "action_public_client": ResourceClient,
+                        "action_args": [
+                            "resource_id=_resolver_resource_id"
+                        ],
+                        "action_precondition_list": [
+                            {
+                                "precondition_type": "status",
+                                "precondition_data": [
+                                    "available", "running", "stopped"],
+                                "compare_result": True
+                            }
+                        ]
                     }
                 ]
             }
@@ -258,8 +299,8 @@ if __name__ == "__main__":
     print("="*60)
 
     # Run examples
-    example_random_action_mode()
-    example_sequence_action_mode()
+    example_random_scenario_mode()
+    example_sequence_scenario_mode()
     example_time_based_stopping()
 
     print("\n" + "="*60)

@@ -4,24 +4,36 @@ import importlib
 
 
 class DeepExplorePublicManager:
-    """Public client manager class, responsible for dynamically creating public client instances."""
+    """Public client manager class, responsible for dynamically creating
+    public client instances from fully qualified class paths.
+
+    Example::
+
+        from deep_explore import DeepExplorePublicManager
+
+        client = DeepExplorePublicManager.create_public_client(
+            "my_package.my_module.MyClient", arg1, arg2)
+    """
 
     @staticmethod
     def create_public_client(
             public_client_absolute_path, *args, **kwargs):
-        """Dynamically create corresponding client object based on given public client name.
+        """Dynamically create a client object from a fully qualified path.
 
         Args:
-            public_client_absolute_path: Client prefix (default "hours.common.public.module.ClassName")
+            public_client_absolute_path: Fully qualified class path
+                (format: "package.module.ClassName").
+            *args: Positional arguments passed to the class constructor.
+            **kwargs: Keyword arguments passed to the class constructor.
 
         Returns:
-            object: Created public client instance
+            object: Created public client instance.
 
         Raises:
-            ImportError: Module import failed
-            AttributeError: Class name not found in module
+            ImportError: Module import failed.
+            AttributeError: Class name not found in module.
         """
-        full_module_path = ""
+        module_name = ""
         class_name = ""
         try:
             module_name, class_name = public_client_absolute_path.rsplit('.', 1)
@@ -37,9 +49,9 @@ class DeepExplorePublicManager:
 
         except ImportError as e:
             raise ImportError(
-                f"Failed to import module '{full_module_path}'") from e
+                f"Failed to import module '{module_name}'") from e
 
         except AttributeError as e:
             raise AttributeError(
-                f"Class '{class_name}' not found in module '{full_module_path}'"
+                f"Class '{class_name}' not found in module '{module_name}'"
             ) from e

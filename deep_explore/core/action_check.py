@@ -1,6 +1,8 @@
 # Copyright 2025 Leo John
 
 import logging
+from typing import Any, List, Tuple, Union
+
 from ..utils.util import DeepExploreUtil
 
 logger = logging.getLogger(__name__)
@@ -15,7 +17,16 @@ class DeepExploreActionCheck:
         check_result: Expected check result
     """
 
-    def __init__(self, deep_explore_object, check_info, check_result):
+    def __init__(self, deep_explore_object: Any,
+                 check_info: Union[Tuple, List],
+                 check_result: Any):
+        """Initialize action check.
+
+        Args:
+            deep_explore_object: Associated test exploration object.
+            check_info: Check function information tuple (function path or reference, *parameters).
+            check_result: Expected check result.
+        """
         self.deep_explore_object = deep_explore_object
         self.check_func = check_info[0]
         self.check_func_args = list(check_info[1:])
@@ -29,14 +40,14 @@ class DeepExploreActionCheck:
                 f"check_func_args={self.check_func_args!r}, "
                 f"check_result={self.check_result!r})")
 
-    def check(self):
+    def check(self) -> bool:
         """Execute check logic and verify result.
 
         Returns:
             bool: Whether check result matches expectation
 
         Raises:
-            RuntimeError: Error occurred during check execution
+            Exception: Error occurred during check execution
         """
 
         try:

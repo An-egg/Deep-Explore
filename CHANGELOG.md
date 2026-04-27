@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- Action-related test modes (`random_action` and `sequence_action`)
+  - Use scenario mode with single-action scenarios instead
+  - When a scenario contains only one action, it functions equivalently to the former action mode
+
+### Changed
+
+- Simplified test modes to only support scenario-based execution
+  - `random_scenario`: Randomly select and execute scenarios
+  - `sequence_scenario`: Execute scenarios in order (supports reverse)
+
 ## [1.0.0] - 2025-01-24
 
 ### Added
@@ -20,8 +32,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Test Modes**
   - `DeepExploreRandomScenarioMode`: Random scenario execution
   - `DeepExploreSequenceScenarioMode`: Ordered scenario execution (with reverse option)
-  - `DeepExploreRandomActionMode`: Random action execution
-  - `DeepExploreSequenceActionMode`: Ordered action execution (with reverse option)
 
 - **Stopping Criteria**
   - `DeepExploreStepStoppingCriteria`: Stop after N steps

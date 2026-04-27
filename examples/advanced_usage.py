@@ -85,38 +85,43 @@ def example_data_matching_precondition():
     # Create the test object
     test_obj = AdvancedTestObject()
 
-    # Configuration with data matching precondition
+    # Configuration with data matching precondition using scenario mode
     config = {
-        "mode_type": "random_action",
+        "mode_type": "random_scenario",
         "stopping_criteria_list": [
             {
                 "criteria_type": "step",
                 "max_steps": 2
             }
         ],
-        "action_list": [
+        "scenario_list": [
             {
-                "action_name": "scale_database",
-                "action_public_client": DatabaseClient,
-                "action_args": [
-                    "db_id=_resolver_db_id",
-                    "new_size=200"
-                ],
-                "action_precondition_list": [
+                "scenario_name": "Scale Database",
+                "action_list": [
                     {
-                        "precondition_type": "data",
-                        "precondition_data": {
-                            "engine": "mysql",
-                            "version": "8.0"
-                        },
-                        "compare_result": True
-                    }
-                ],
-                "action_post_check_list": [
-                    {
-                        "check_info": ["examples.common.check_database_scaled",
-                                     "_resolver_db_id", 200],
-                        "check_result": True
+                        "action_name": "scale_database",
+                        "action_public_client": DatabaseClient,
+                        "action_args": [
+                            "db_id=_resolver_db_id",
+                            "new_size=200"
+                        ],
+                        "action_precondition_list": [
+                            {
+                                "precondition_type": "data",
+                                "precondition_data": {
+                                    "engine": "mysql",
+                                    "version": "8.0"
+                                },
+                                "compare_result": True
+                            }
+                        ],
+                        "action_post_check_list": [
+                            {
+                                "check_info": ["examples.common.check_database_scaled",
+                                             "_resolver_db_id", 200],
+                                "check_result": True
+                            }
+                        ]
                     }
                 ]
             }
@@ -142,9 +147,9 @@ def example_multiple_stopping_criteria():
     # Create the test object
     test_obj = AdvancedTestObject()
 
-    # Configuration with multiple stopping criteria
+    # Configuration with multiple stopping criteria using scenario mode
     config = {
-        "mode_type": "random_action",
+        "mode_type": "random_scenario",
         "stopping_criteria_list": [
             {
                 "criteria_type": "step",
@@ -155,18 +160,23 @@ def example_multiple_stopping_criteria():
                 "duration": 3
             }
         ],
-        "action_list": [
+        "scenario_list": [
             {
-                "action_name": "add_replica",
-                "action_public_client": DatabaseClient,
-                "action_args": [
-                    "db_id=_resolver_db_id"
-                ],
-                "action_precondition_list": [
+                "scenario_name": "Add Replica",
+                "action_list": [
                     {
-                        "precondition_type": "status",
-                        "precondition_data": ["available", "running"],
-                        "compare_result": True
+                        "action_name": "add_replica",
+                        "action_public_client": DatabaseClient,
+                        "action_args": [
+                            "db_id=_resolver_db_id"
+                        ],
+                        "action_precondition_list": [
+                            {
+                                "precondition_type": "status",
+                                "precondition_data": ["available", "running"],
+                                "compare_result": True
+                            }
+                        ]
                     }
                 ]
             }
@@ -192,41 +202,51 @@ def example_update_positions():
     # Create the test object
     test_obj = AdvancedTestObject()
 
-    # Configuration with custom update positions
+    # Configuration with custom update positions using scenario mode
     config = {
-        "mode_type": "sequence_action",
+        "mode_type": "sequence_scenario",
         "stopping_criteria_list": [
             {
                 "criteria_type": "step",
                 "max_steps": 2
             }
         ],
-        "action_list": [
+        "scenario_list": [
             {
-                "action_name": "create_database",
-                "action_public_client": DatabaseClient,
-                "action_args": [
-                    "db_name=_resolver_db_name",
-                    "engine=mysql",
-                    "version=8.0",
-                    "size=100"
-                ],
-                "update_positions": ["start", "end"],
-                "action_post_check_list": [
+                "scenario_name": "Create Database",
+                "action_list": [
                     {
-                        "check_info": ["examples.common.check_database_created",
-                                     "_resolver_db_id"],
-                        "check_result": True
+                        "action_name": "create_database",
+                        "action_public_client": DatabaseClient,
+                        "action_args": [
+                            "db_name=_resolver_db_name",
+                            "engine=mysql",
+                            "version=8.0",
+                            "size=100"
+                        ],
+                        "update_positions": ["start", "end"],
+                        "action_post_check_list": [
+                            {
+                                "check_info": ["examples.common.check_database_created",
+                                             "_resolver_db_id"],
+                                "check_result": True
+                            }
+                        ]
                     }
                 ]
             },
             {
-                "action_name": "add_replica",
-                "action_public_client": DatabaseClient,
-                "action_args": [
-                    "db_id=_resolver_db_id"
-                ],
-                "update_positions": ["before_exec_action", "after_exec_action"]
+                "scenario_name": "Add Replica",
+                "action_list": [
+                    {
+                        "action_name": "add_replica",
+                        "action_public_client": DatabaseClient,
+                        "action_args": [
+                            "db_id=_resolver_db_id"
+                        ],
+                        "update_positions": ["before_exec_action", "after_exec_action"]
+                    }
+                ]
             }
         ]
     }
@@ -250,28 +270,33 @@ def example_error_handling():
     # Create the test object
     test_obj = AdvancedTestObject()
 
-    # Configuration with error handling
+    # Configuration with error handling using scenario mode
     config = {
-        "mode_type": "random_action",
+        "mode_type": "random_scenario",
         "stopping_criteria_list": [
             {
                 "criteria_type": "step",
                 "max_steps": 2
             }
         ],
-        "action_list": [
+        "scenario_list": [
             {
-                "action_name": "delete_database",
-                "action_public_client": DatabaseClient,
-                "action_args": [
-                    "db_id=_resolver_db_id"
-                ],
-                "except_meet_exception": True,
-                "action_precondition_list": [
+                "scenario_name": "Delete Database",
+                "action_list": [
                     {
-                        "precondition_type": "status",
-                        "precondition_data": ["available"],
-                        "compare_result": True
+                        "action_name": "delete_database",
+                        "action_public_client": DatabaseClient,
+                        "action_args": [
+                            "db_id=_resolver_db_id"
+                        ],
+                        "except_meet_exception": True,
+                        "action_precondition_list": [
+                            {
+                                "precondition_type": "status",
+                                "precondition_data": ["available"],
+                                "compare_result": True
+                            }
+                        ]
                     }
                 ]
             }

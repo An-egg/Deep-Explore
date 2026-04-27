@@ -4,14 +4,13 @@ from .action import DeepExploreAction
 from .action_check import DeepExploreActionCheck
 from .action_executor import DeepExploreActionExecutor
 from .base_object import DeepExploreObject
+from .hooks import DeepExploreHookManager, HookPoint
 from .scenario import DeepExploreScenario
 from .loader import DeepExploreLoader
 from .mode import (
     DeepExploreMode,
     DeepExploreRandomScenarioMode,
     DeepExploreSequenceScenarioMode,
-    DeepExploreRandomActionMode,
-    DeepExploreSequenceActionMode,
 )
 from .precondition import (
     DeepExplorePrecondition,
@@ -31,12 +30,12 @@ __all__ = [
     "DeepExploreActionCheck",
     "DeepExploreActionExecutor",
     "DeepExploreObject",
+    "DeepExploreHookManager",
+    "HookPoint",
     "DeepExploreScenario",
     "DeepExploreMode",
     "DeepExploreRandomScenarioMode",
     "DeepExploreSequenceScenarioMode",
-    "DeepExploreRandomActionMode",
-    "DeepExploreSequenceActionMode",
     "DeepExplorePrecondition",
     "DeepExploreStatusPrecondition",
     "DeepExploreMatchDataPrecondition",

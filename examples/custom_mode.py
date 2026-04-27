@@ -216,28 +216,33 @@ def example_custom_precondition():
     # Create the test object
     test_obj = CustomTestObject()
 
-    # Configuration with function precondition
+    # Configuration with function precondition using scenario mode
     config = {
-        "mode_type": "random_action",
+        "mode_type": "random_scenario",
         "stopping_criteria_list": [
             {
                 "criteria_type": "step",
                 "max_steps": 2
             }
         ],
-        "action_list": [
+        "scenario_list": [
             {
-                "action_name": "process_task",
-                "action_public_client": TaskClient,
-                "action_args": [
-                    "task_id=_resolver_task_id"
-                ],
-                "action_precondition_list": [
+                "scenario_name": "Process Task",
+                "action_list": [
                     {
-                        "precondition_type": "function",
-                        "precondition_data": [["examples.common.check_high_priority",
-                                             "_resolver_task_id"], True],
-                        "compare_result": True
+                        "action_name": "process_task",
+                        "action_public_client": TaskClient,
+                        "action_args": [
+                            "task_id=_resolver_task_id"
+                        ],
+                        "action_precondition_list": [
+                            {
+                                "precondition_type": "function",
+                                "precondition_data": [["examples.common.check_high_priority",
+                                                     "_resolver_task_id"], True],
+                                "compare_result": True
+                            }
+                        ]
                     }
                 ]
             }

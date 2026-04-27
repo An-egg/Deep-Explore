@@ -143,7 +143,8 @@ The project supports Python 3.8+. New code should be compatible with Python 3.8.
 
 ### Testing
 
-- Write tests for new functionality
+- Write tests for new functionality in the `tests/` directory
+- Run tests with `pytest` before submitting
 - Maintain test coverage
 - Use descriptive test names
 - Test edge cases and error conditions

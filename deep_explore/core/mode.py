@@ -2,11 +2,14 @@
 
 import logging
 import random
+from abc import ABC, abstractmethod
+
+from .hooks import DeepExploreHookManager, HookPoint
 
 logger = logging.getLogger(__name__)
 
 
-class DeepExploreMode:
+class DeepExploreMode(ABC):
     """Base class for test exploration modes.
 
     Provides scenario/action execution statistics.
@@ -15,9 +18,13 @@ class DeepExploreMode:
         already_exec_scenarios: List of executed scenario records.
         already_exec_actions: List of executed action records.
     """
-    already_exec_scenarios = []
-    already_exec_actions = []
 
+    def __init__(self):
+        """Initialize DeepExploreMode."""
+        self.already_exec_scenarios: list = []
+        self.already_exec_actions: list = []
+
+    @abstractmethod
     def exec_test(self):
         """Main entry method for test execution.
 
@@ -89,10 +96,10 @@ class DeepExploreRandomScenarioMode(DeepExploreMode):
             stop_criteria_list: List of stopping criteria.
             scenarios: List of executable scenarios.
         """
+        super().__init__()
         self.deep_explore_object = deep_explore_object
         self.stop_criteria_list = stop_criteria_list
         self.scenarios = scenarios
-        self.already_exec_scenarios = []  # Override parent class variable as instance variable
 
     def exec_test(self):
         """Randomly execute scenarios until stopping criteria are met."""
@@ -121,6 +128,12 @@ class DeepExploreRandomScenarioMode(DeepExploreMode):
             selected_scenario = random.choice(available_scenarios)
             try:
                 scenario_name = selected_scenario.scenario_name
+                # Invoke BEFORE_SCENARIO hook
+                DeepExploreHookManager.invoke(
+                    HookPoint.BEFORE_SCENARIO,
+                    scenario_name=scenario_name,
+                    deep_explore_object=self.deep_explore_object,
+                    scenario=selected_scenario)
                 # Record executed scenario
                 scenario_record = {scenario_name: []}
                 self.already_exec_scenarios.append(scenario_record)
@@ -128,69 +141,24 @@ class DeepExploreRandomScenarioMode(DeepExploreMode):
                     self.deep_explore_object)
                 # Update actions executed in scenario
                 scenario_record[scenario_name] = action_list
+                # Invoke AFTER_SCENARIO hook
+                DeepExploreHookManager.invoke(
+                    HookPoint.AFTER_SCENARIO,
+                    scenario_name=scenario_name,
+                    deep_explore_object=self.deep_explore_object,
+                    scenario=selected_scenario,
+                    success=True)
 
             except Exception as e:
+                # Invoke AFTER_SCENARIO hook with failure
+                DeepExploreHookManager.invoke(
+                    HookPoint.AFTER_SCENARIO,
+                    scenario_name=selected_scenario.scenario_name,
+                    deep_explore_object=self.deep_explore_object,
+                    scenario=selected_scenario,
+                    success=False)
                 self.scenario_statistics()
-                raise Exception(f"Scenario execution failed: {e}")
-
-
-class DeepExploreRandomActionMode(DeepExploreMode):
-    """Random action test mode.
-
-    Attributes:
-        deep_explore_object: Test exploration target object.
-        stop_criteria_list: List of stopping criteria.
-        actions: List of executable actions.
-        already_exec_actions: List of executed action records.
-    """
-
-    def __init__(self, deep_explore_object, stop_criteria_list, actions):
-        """Initialize random action mode.
-
-        Args:
-            deep_explore_object: Test exploration target object.
-            stop_criteria_list: List of stopping criteria.
-            actions: List of executable actions.
-        """
-        self.deep_explore_object = deep_explore_object
-        self.stop_criteria_list = stop_criteria_list
-        self.actions = actions
-        self.already_exec_actions = []  # Override parent class variable as instance variable
-
-    def exec_test(self):
-        """Randomly execute actions until stopping criteria are met."""
-        while True:
-            # Check stopping criteria
-            for criteria in self.stop_criteria_list:
-                if criteria.is_matched():
-                    logger.info(
-                        "Stopping criteria satisfied: "
-                        f"{criteria.__class__.__name__}. Exiting test.")
-                    self.action_statistics()
-                    return
-
-            # Filter actions that meet preconditions
-            available_actions = [
-                a for a in self.actions
-                if a.check_preconditions(self.deep_explore_object)
-            ]
-
-            if not available_actions:
-                logger.info("No available actions. Exiting test.")
-                self.action_statistics()
-                return
-
-            # Randomly select and execute action
-            selected_action = random.choice(available_actions)
-            try:
-                action_name = selected_action.action_executor.action_name
-                # Record executed action
-                self.already_exec_actions.append(action_name)
-                selected_action.exec_action(self.deep_explore_object)
-
-            except Exception as e:
-                self.action_statistics()
-                raise Exception(f"Action execution failed: {e}")
+                raise Exception(f"Scenario execution failed: {e}") from e
 
 
 class DeepExploreSequenceScenarioMode(DeepExploreMode):
@@ -213,10 +181,10 @@ class DeepExploreSequenceScenarioMode(DeepExploreMode):
             scenarios: List of executable scenarios.
             reverse: Whether to execute sequence in reverse (default False).
         """
+        super().__init__()
         self.deep_explore_object = deep_explore_object
         self.stop_criteria_list = stop_criteria_list
         self.scenarios = scenarios[::-1] if reverse else scenarios
-        self.already_exec_scenarios = []  # Override parent class variable as instance variable
 
     def exec_test(self):
         """Execute scenarios in order until stopping criteria are met."""
@@ -242,6 +210,12 @@ class DeepExploreSequenceScenarioMode(DeepExploreMode):
             index += 1
             try:
                 scenario_name = current_scenario.scenario_name
+                # Invoke BEFORE_SCENARIO hook
+                DeepExploreHookManager.invoke(
+                    HookPoint.BEFORE_SCENARIO,
+                    scenario_name=scenario_name,
+                    deep_explore_object=self.deep_explore_object,
+                    scenario=current_scenario)
                 # Record executed scenario
                 scenario_record = {scenario_name: []}
                 self.already_exec_scenarios.append(scenario_record)
@@ -249,84 +223,97 @@ class DeepExploreSequenceScenarioMode(DeepExploreMode):
                     self.deep_explore_object)
                 # Update actions executed in scenario
                 scenario_record[scenario_name] = action_list
+                # Invoke AFTER_SCENARIO hook
+                DeepExploreHookManager.invoke(
+                    HookPoint.AFTER_SCENARIO,
+                    scenario_name=scenario_name,
+                    deep_explore_object=self.deep_explore_object,
+                    scenario=current_scenario,
+                    success=True)
 
             except Exception as e:
+                # Invoke AFTER_SCENARIO hook with failure
+                DeepExploreHookManager.invoke(
+                    HookPoint.AFTER_SCENARIO,
+                    scenario_name=current_scenario.scenario_name,
+                    deep_explore_object=self.deep_explore_object,
+                    scenario=current_scenario,
+                    success=False)
                 self.scenario_statistics()
-                raise Exception(f"Scenario execution failed: {e}")
-
-
-class DeepExploreSequenceActionMode(DeepExploreMode):
-    """Sequential action test mode.
-
-    Attributes:
-        deep_explore_object: Test exploration target object.
-        stop_criteria_list: List of stopping criteria.
-        actions: List of executable actions.
-        already_exec_actions: List of executed action records.
-    """
-
-    def __init__(self, deep_explore_object, stop_criteria_list, actions,
-                 reverse=False):
-        """Initialize sequential action mode.
-
-        Args:
-            deep_explore_object: Test exploration target object.
-            stop_criteria_list: List of stopping criteria.
-            actions: List of executable actions.
-            reverse: Whether to execute actions in reverse order (default False).
-        """
-        self.deep_explore_object = deep_explore_object
-        self.stop_criteria_list = stop_criteria_list
-        self.actions = actions[::-1] if reverse else actions
-        self.already_exec_actions = []  # Override parent class variable as instance variable
-
-    def exec_test(self):
-        """Execute actions in order until stopping criteria are met or all actions are completed."""
-        index = 0
-        while True:
-            # Check stopping criteria
-            for criteria in self.stop_criteria_list:
-                if criteria.is_matched():
-                    logger.info(
-                        "Stopping criteria satisfied: "
-                        f"{criteria.__class__.__name__}. Exiting test.")
-                    self.action_statistics()
-                    return
-
-            # Check if all actions are completed
-            if index >= len(self.actions):
-                logger.info("All scenarios executed. Exiting test.")
-                self.action_statistics()
-                return
-
-            # Execute current action
-            current_action = self.actions[index]
-            index += 1
-            try:
-                action_name = current_action.action_executor.action_name
-                # Record executed action
-                self.already_exec_actions.append(action_name)
-                current_action.exec_action(self.deep_explore_object)
-
-            except Exception as e:
-                self.action_statistics()
-                raise Exception(f"Action execution failed: {e}")
+                raise Exception(f"Scenario execution failed: {e}") from e
 
 
 class DeepExploreModeFactory:
-    """Test exploration mode factory class."""
+    """Test exploration mode factory class.
 
-    @staticmethod
-    def create_mode(mode_type, deep_explore_object, stop_criteria_list,
+    Supports runtime registration of custom mode types via the
+    :meth:`register` class method.
+
+    Example::
+
+        class MyCustomMode(DeepExploreMode):
+            def __init__(self, obj, criteria, tests, **kwargs):
+                super().__init__()
+                ...
+            def exec_test(self):
+                ...
+
+        DeepExploreModeFactory.register("custom", MyCustomMode)
+        mode = DeepExploreModeFactory.create_mode("custom", obj, criteria, tests)
+    """
+
+    _custom_modes: dict = {}
+
+    @classmethod
+    def register(cls, mode_type: str, mode_class: type) -> None:
+        """Register a custom mode type.
+
+        Args:
+            mode_type: Unique string identifier for the mode type.
+            mode_class: Mode class (must be a subclass of DeepExploreMode).
+
+        Raises:
+            TypeError: If mode_class is not a subclass of DeepExploreMode.
+            ValueError: If mode_type is already registered.
+        """
+        if not (isinstance(mode_class, type) and issubclass(mode_class, DeepExploreMode)):
+            raise TypeError(
+                f"mode_class must be a subclass of DeepExploreMode, "
+                f"got {mode_class}")
+        if mode_type in cls._custom_modes:
+            raise ValueError(
+                f"Mode type '{mode_type}' is already registered. "
+                f"Use a different name or unregister first.")
+        cls._custom_modes[mode_type] = mode_class
+        logger.info(f"Registered custom mode type: {mode_type}")
+
+    @classmethod
+    def unregister(cls, mode_type: str) -> bool:
+        """Unregister a previously registered custom mode type.
+
+        Args:
+            mode_type: The mode type identifier to unregister.
+
+        Returns:
+            bool: True if the mode type was found and removed, False otherwise.
+        """
+        if mode_type in cls._custom_modes:
+            del cls._custom_modes[mode_type]
+            logger.info(f"Unregistered mode type: {mode_type}")
+            return True
+        return False
+
+    @classmethod
+    def create_mode(cls, mode_type, deep_explore_object, stop_criteria_list,
                     test_objects, **kwargs):
         """Create a test exploration mode instance of the specified type.
 
         Args:
             mode_type: Mode type ('random_scenario', 'sequence_scenario',
-                               'random_action', 'sequence_action').
+                or any custom registered type).
             deep_explore_object: Test exploration target object.
             stop_criteria_list: List of stopping criteria.
-            test_objects: Test object collection (scenarios or actions).
+            test_objects: Test object collection (scenarios).
             **kwargs: Mode-specific parameters (e.g., reverse).
 
         Returns:
@@ -344,13 +331,9 @@ class DeepExploreModeFactory:
             return DeepExploreSequenceScenarioMode(
                 deep_explore_object, stop_criteria_list, test_objects, reverse)
 
-        elif mode_type == "random_action":
-            return DeepExploreRandomActionMode(
-                deep_explore_object, stop_criteria_list, test_objects)
+        elif mode_type in cls._custom_modes:
+            return cls._custom_modes[mode_type](
+                deep_explore_object, stop_criteria_list, test_objects, **kwargs)
 
-        elif mode_type == "sequence_action":
-            reverse = kwargs.get('reverse', False)
-            return DeepExploreSequenceActionMode(
-                deep_explore_object, stop_criteria_list, test_objects, reverse)
         else:
             raise ValueError(f"Unsupported mode type: {mode_type}")

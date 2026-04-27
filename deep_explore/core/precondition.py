@@ -147,14 +147,63 @@ class DeepExploreFunctionPrecondition(DeepExplorePrecondition):
 
 
 class DeepExplorePreconditionFactory:
-    """Precondition factory class, provides standardized object creation."""
+    """Precondition factory class, provides standardized object creation.
+
+    Supports runtime registration of custom precondition types via the
+    :meth:`register` class method.
+    """
+
+    _custom_preconditions: dict = {}
+
+    @classmethod
+    def register(cls, precondition_type: str, precondition_class: type) -> None:
+        """Register a custom precondition type.
+
+        Args:
+            precondition_type: Unique string identifier for the precondition type.
+            precondition_class: Precondition class (must be a subclass of
+                DeepExplorePrecondition).
+
+        Raises:
+            TypeError: If precondition_class is not a subclass of
+                DeepExplorePrecondition.
+            ValueError: If precondition_type is already registered.
+        """
+        if not (isinstance(precondition_class, type)
+                and issubclass(precondition_class, DeepExplorePrecondition)):
+            raise TypeError(
+                f"precondition_class must be a subclass of "
+                f"DeepExplorePrecondition, got {precondition_class}")
+        if precondition_type in cls._custom_preconditions:
+            raise ValueError(
+                f"Precondition type '{precondition_type}' is already "
+                f"registered. Use a different name or unregister first.")
+        cls._custom_preconditions[precondition_type] = precondition_class
+        logger.info(f"Registered custom precondition type: {precondition_type}")
+
+    @classmethod
+    def unregister(cls, precondition_type: str) -> bool:
+        """Unregister a previously registered custom precondition type.
+
+        Args:
+            precondition_type: The precondition type identifier to unregister.
+
+        Returns:
+            bool: True if the type was found and removed, False otherwise.
+        """
+        if precondition_type in cls._custom_preconditions:
+            del cls._custom_preconditions[precondition_type]
+            logger.info(f"Unregistered precondition type: {precondition_type}")
+            return True
+        return False
 
     @staticmethod
     def create(precondition_type, precondition_data, compare_result=True):
         """Factory method to create precondition instance.
 
         Args:
-            precondition_type: Precondition type (supports 'status', 'data')
+            precondition_type: Precondition type (supports 'status', 'data',
+                'function', or any custom registered type).
             precondition_data: Parameters required for the type
             compare_result: Compare expected result
         Returns:
@@ -175,4 +224,11 @@ class DeepExplorePreconditionFactory:
         elif precondition_type == "function":
             return DeepExploreFunctionPrecondition(
                 precondition_data, compare_result)
+
+        # Check custom registered types
+        custom_class = DeepExplorePreconditionFactory._custom_preconditions.get(
+            precondition_type)
+        if custom_class is not None:
+            return custom_class(precondition_data, compare_result)
+
         raise ValueError(f"Unsupported precondition type: {precondition_type}")

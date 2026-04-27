@@ -2,6 +2,8 @@
 
 import logging
 
+from .hooks import DeepExploreHookManager, HookPoint
+
 logger = logging.getLogger(__name__)
 
 
@@ -47,8 +49,41 @@ class DeepExploreScenario:
         logger.info(f"Executing scenario: {self.scenario_name}")
 
         for action in self.actions:
-            action.exec_action(deep_explore_object)
-            action_names.append(action.action_executor.action_name)
+            action_name = action.action_executor.action_name
+            # Invoke BEFORE_ACTION hook
+            DeepExploreHookManager.invoke(
+                HookPoint.BEFORE_ACTION,
+                action_name=action_name,
+                deep_explore_object=deep_explore_object,
+                action=action)
+            try:
+                result = action.exec_action(deep_explore_object)
+                action_names.append(action_name)
+                # Invoke AFTER_ACTION hook
+                DeepExploreHookManager.invoke(
+                    HookPoint.AFTER_ACTION,
+                    action_name=action_name,
+                    deep_explore_object=deep_explore_object,
+                    action=action,
+                    result=result,
+                    success=True)
+            except Exception as e:
+                # Invoke ON_ACTION_ERROR hook
+                DeepExploreHookManager.invoke(
+                    HookPoint.ON_ACTION_ERROR,
+                    action_name=action_name,
+                    deep_explore_object=deep_explore_object,
+                    action=action,
+                    error=e)
+                # Invoke AFTER_ACTION hook with failure
+                DeepExploreHookManager.invoke(
+                    HookPoint.AFTER_ACTION,
+                    action_name=action_name,
+                    deep_explore_object=deep_explore_object,
+                    action=action,
+                    result=None,
+                    success=False)
+                raise
 
         logger.info(f"Completed scenario: {self.scenario_name} "
                     f"with {len(action_names)} actions")
